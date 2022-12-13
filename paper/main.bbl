@@ -1,0 +1,138 @@
+\begin{thebibliography}{18}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Kostelich and Yorke(1990)]{kostelich1990noise}
+Eric~J Kostelich and James~A Yorke.
+\newblock Noise reduction: Finding the simplest dynamical system consistent
+  with the data.
+\newblock \emph{Physica D: Nonlinear Phenomena}, 41\penalty0 (2):\penalty0
+  183--196, 1990.
+
+\bibitem[Elshorbagy et~al.(2002)Elshorbagy, Simonovic, and
+  Panu]{elshorbagy2002noise}
+A~Elshorbagy, SP~Simonovic, and US~Panu.
+\newblock Noise reduction in chaotic hydrologic time series: facts and doubts.
+\newblock \emph{Journal of Hydrology}, 256\penalty0 (3-4):\penalty0 147--165,
+  2002.
+
+\bibitem[Deng et~al.(2020)Deng, Chang, Brubaker, Mori, and Lehrmann]{Deng2020}
+Ruizhi Deng, Bo~Chang, Marcus~A. Brubaker, Greg Mori, and Andreas~M. Lehrmann.
+\newblock {Modeling continuous stochastic processes with dynamic normalizing
+  flows}.
+\newblock \emph{Advances in Neural Information Processing Systems},
+  2020-Decem\penalty0 (NeurIPS):\penalty0 1--11, 2020.
+\newblock ISSN 10495258.
+
+\bibitem[{De Brouwer} et~al.(2020){De Brouwer}, Simm, Arany, and
+  Moreau]{DeBrouwer2020}
+Edward {De Brouwer}, Jaak Simm, Adam Arany, and Yves Moreau.
+\newblock {GRU-ODE-Bayes: Continuous modeling of sporadically-observed time
+  series}.
+\newblock \emph{Belgian/Netherlands Artificial Intelligence Conference},
+  \penalty0 (NeurIPS):\penalty0 364--366, 2020.
+\newblock ISSN 15687805.
+
+\bibitem[Liu et~al.(2019)Liu, Xiao, Si, Cao, Kumar, and Hsieh]{Liu2019}
+Xuanqing Liu, Tesi Xiao, Si~Si, Qin Cao, Sanjiv Kumar, and Cho-Jui Hsieh.
+\newblock {Neural SDE: Stabilizing Neural ODE Networks with Stochastic Noise}.
+\newblock \penalty0 (2), 2019.
+\newblock URL \url{http://arxiv.org/abs/1906.02355}.
+
+\bibitem[Dhwaj et~al.(2018)Dhwaj, Kovitz, Tian, Jiang, and Itoh]{Dhwaj2018}
+Kirti Dhwaj, Joshua~M. Kovitz, Haozhan Tian, Li~Jun Jiang, and Tatsuo Itoh.
+\newblock {Half-mode cavity-based planar filtering antenna with controllable
+  transmission zeroes}.
+\newblock \emph{IEEE Antennas and Wireless Propagation Letters}, 17\penalty0
+  (5):\penalty0 833--836, 2018.
+\newblock ISSN 15361225.
+\newblock \doi{10.1109/LAWP.2018.2818058}.
+
+\bibitem[Alrumaih and Al-Fawzan(2002)]{Alrumaih2002}
+Rumaih~M. Alrumaih and Mohammad~A. Al-Fawzan.
+\newblock {Time Series Forecasting Using Wavelet Denoising an Application to
+  Saudi Stock Index}.
+\newblock \emph{Journal of King Saud University - Engineering Sciences},
+  14\penalty0 (2):\penalty0 221--233, 2002.
+\newblock ISSN 10183639.
+\newblock \doi{10.1016/S1018-3639(18)30755-4}.
+\newblock URL \url{http://dx.doi.org/10.1016/S1018-3639(18)30755-4}.
+
+\bibitem[Gardner~Jr(1985)]{gardner1985exponential}
+Everette~S Gardner~Jr.
+\newblock Exponential smoothing: The state of the art.
+\newblock \emph{Journal of forecasting}, 4\penalty0 (1):\penalty0 1--28, 1985.
+
+\bibitem[Ignatov and Strijov(2016)]{Ignatov2016}
+Andrey~D. Ignatov and Vadim~V. Strijov.
+\newblock {Human activity recognition using quasiperiodic time series collected
+  from a single tri-axial accelerometer}.
+\newblock \emph{Multimedia Tools and Applications}, 75\penalty0 (12):\penalty0
+  7257--7270, 2016.
+\newblock ISSN 15737721.
+\newblock \doi{10.1007/s11042-015-2643-0}.
+\newblock URL \url{http://dx.doi.org/10.1007/s11042-015-2643-0}.
+
+\bibitem[Noakes(1991)]{noakes1991takens}
+Lyle Noakes.
+\newblock The takens embedding theorem.
+\newblock \emph{International Journal of Bifurcation and Chaos}, 1\penalty0
+  (04):\penalty0 867--872, 1991.
+
+\bibitem[{Ricky T. Q. Chen, Yulia Rubanova, Jesse Bettencourt}(2018)]{Chen2018}
+David~Duvenaud {Ricky T. Q. Chen, Yulia Rubanova, Jesse Bettencourt}.
+\newblock {Ordinary Differential Equations}.
+\newblock \emph{UNITEXT - La Matematica per il 3 piu 2}, 109\penalty0
+  (NeurIPS):\penalty0 31--60, 2018.
+\newblock ISSN 20385757.
+\newblock \doi{10.1007/978-3-662-55774-7_3}.
+
+\bibitem[Xie et~al.(2019)Xie, Parlikad, and Puri]{xie2019neural}
+Xiang Xie, Ajith~Kumar Parlikad, and Ramprakash~Srinivasan Puri.
+\newblock A neural ordinary differential equations based approach for demand
+  forecasting within power grid digital twins.
+\newblock In \emph{2019 IEEE International Conference on Communications,
+  Control, and Computing Technologies for Smart Grids (SmartGridComm)}, pages
+  1--6. IEEE, 2019.
+
+\bibitem[Meleshkova et~al.(2021)Meleshkova, Ivanov, and
+  Ivanova]{meleshkova2021application}
+Zoya Meleshkova, Sergei~Evgenievich Ivanov, and Lubov Ivanova.
+\newblock Application of neural ode with embedded hybrid method for robotic
+  manipulator control.
+\newblock \emph{Procedia Computer Science}, 193:\penalty0 314--324, 2021.
+
+\bibitem[Du et~al.(2020)Du, Futoma, and Doshi-Velez]{du2020model}
+Jianzhun Du, Joseph Futoma, and Finale Doshi-Velez.
+\newblock Model-based reinforcement learning for semi-markov decision processes
+  with neural odes.
+\newblock \emph{Advances in Neural Information Processing Systems},
+  33:\penalty0 19805--19816, 2020.
+
+\bibitem[Wu et~al.(2019)Wu, Shen, and Van Den~Hengel]{wu2019wider}
+Zifeng Wu, Chunhua Shen, and Anton Van Den~Hengel.
+\newblock Wider or deeper: Revisiting the resnet model for visual recognition.
+\newblock \emph{Pattern Recognition}, 90:\penalty0 119--133, 2019.
+
+\bibitem[Dupont et~al.(2019)Dupont, Doucet, and Teh]{Dupont2019}
+Emilien Dupont, Arnaud Doucet, and Yee~Whye Teh.
+\newblock {Augmented neural ODEs}.
+\newblock \emph{Advances in Neural Information Processing Systems}, 32\penalty0
+  (NeurIPS):\penalty0 1--11, 2019.
+\newblock ISSN 10495258.
+
+\bibitem[Liu et~al.(2018)Liu, Cheng, Zhang, and Hsieh]{liu2018towards}
+Xuanqing Liu, Minhao Cheng, Huan Zhang, and Cho-Jui Hsieh.
+\newblock Towards robust neural networks via random self-ensemble.
+\newblock In \emph{Proceedings of the European Conference on Computer Vision
+  (ECCV)}, pages 369--385, 2018.
+
+\bibitem[Baldi and Sadowski(2013)]{baldi2013understanding}
+Pierre Baldi and Peter~J Sadowski.
+\newblock Understanding dropout.
+\newblock \emph{Advances in neural information processing systems}, 26, 2013.
+
+\end{thebibliography}

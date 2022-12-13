@@ -1,158 +1,128 @@
-\documentclass{article}
-\usepackage{arxiv}
+\documentclass[a4paper, 14pt]{article}
 
-\usepackage[utf8]{inputenc}
-\usepackage[english, russian]{babel}
-\usepackage[T1]{fontenc}
-\usepackage{url}
-\usepackage{booktabs}
-\usepackage{amsfonts}
-\usepackage{nicefrac}
-\usepackage{microtype}
-\usepackage{lipsum}
-\usepackage{graphicx}
-\usepackage{natbib}
-\usepackage{doi}
+\input{preamble.tex}
+\renewcommand{\abstractname}{Аннотация}
 
+\title{Способы учёта шума данных в модели нейронных дифференциальных уравнений}
 
-
-\title{A template for the \emph{arxiv} style}
-
-\author{ David S.~Hippocampus\thanks{Use footnote for providing further
-		information about author (webpage, alternative
-		address)---\emph{not} for acknowledging funding agencies.} \\
-	Department of Computer Science\\
-	Cranberry-Lemon University\\
-	Pittsburgh, PA 15213 \\
-	\texttt{hippo@cs.cranberry-lemon.edu} \\
-	%% examples of more authors
+\author{Владимиров Эдуард \\
+	\texttt{vladimirov.ea@phystech.edu} \\
+	
 	\And
-	Elias D.~Striatum \\
-	Department of Electrical Engineering\\
-	Mount-Sheikh University\\
-	Santa Narimana, Levand \\
-	\texttt{stariate@ee.mount-sheikh.edu} \\
-	%% \AND
-	%% Coauthor \\
-	%% Affiliation \\
-	%% Address \\
-	%% \texttt{email} \\
-	%% \And
-	%% Coauthor \\
-	%% Affiliation \\
-	%% Address \\
-	%% \texttt{email} \\
-	%% \And
-	%% Coauthor \\
-	%% Affiliation \\
-	%% Address \\
-	%% \texttt{email} \\
+	Стрижов Вадим \\
+	\texttt{strijov@phystech.edu}
 }
-\date{}
-
-\renewcommand{\shorttitle}{\textit{arXiv} Template}
-
-%%% Add PDF metadata to help others organize their library
-%%% Once the PDF is generated, you can check the metadata with
-%%% $ pdfinfo template.pdf
-\hypersetup{
-pdftitle={A template for the arxiv style},
-pdfsubject={q-bio.NC, q-bio.QM},
-pdfauthor={David S.~Hippocampus, Elias D.~Striatum},
-pdfkeywords={First keyword, Second keyword, More},
-}
+\date{\today}
 
 \begin{document}
-\maketitle
+	\maketitle
+	
+	\begin{abstract}
+		TODO
+	\end{abstract}
+	
+	\keywords{временной ряд \and нейронные обыкновенные дифференциальные уравнения \and нейронные стохастические дифференциальные уравнения \and шум}
+	
+	\section{Введение}
+	Извлечение шума является важной частью предобработки данных, так как он ограничивает процесс извлечения информации. 
+	Для того, чтобы нивелировать эффект зашумлённости данных на качество предсказательной модели, необходимо либо заранее предобработать временной ряд, либо внедрить в неё механизм очистки данных, например аугментации, либо, наоборот, добавить шум к чистым данным.
+	
+	Во многих случаях временные ряды создаются низкоразмерной динамической системой.
+	Тогда загрязнение шумом временных рядов может привести к затруднению поиска оптимальной размерности эмбеддинга \cite{kostelich1990noise} и ограничению точности прогнозирования \cite{elshorbagy2002noise}. Поэтому снижение
+	уровня шума при сохранении базовой динамики, генерируемой на основе временных рядов, имеет первостепенное значение.
+	
+	\begin{table}[bhtp]
+		\caption{Классификация методов фильтрации временных рядов и их аналогов в фреймворке Neural ODE}
+		\begin{tabulary}{\textwidth}{|C|C|C|}
+			\hline
+			\textbf{Механизм предобработки} & \textbf{Фильтры} & \textbf{Аналог в фреймворке NODE} 
+			\\ \hline
+			Разложение & вейвлет-преобразование, преобразование Фурье, метод главных компонент & --- 
+			\\ \hline
+			Итеративный & фильтр Калмана & непрерывный процесс потока времени (Continuous Time Flow Process, CTFP) \cite{Deng2020}, GRU-ODE-Bayes \cite{DeBrouwer2020}
+			\\ \hline
+			Итеративный & экспоненциальное сглаживание, модель Хольта-Брауна, пакетная нормализация & ---
+			\\ \hline
+			Введение случайности & dropout, добавление гауссовского шума
+			& NSDE с разными компонентами перед дифференциалом от стандартного броуновского движения \cite{Liu2019}
+			\\ \hline
+		\end{tabulary}
+	\end{table}
+	
+	Существует несколько основных методов предобработки сигналов.
+	Фильтр Калмана \cite{Dhwaj2018} использует информацию о физике самого явления.
+	Вейвлет преобразование \cite{Alrumaih2002} раскладывает временной ряд на множество других с разным разрешением.
+	Экспоненциальное сглаживание \cite{gardner1985exponential} выравнивает временной ряд с помощью экспоненциальной оконной функции.
+	В работе \cite{Ignatov2016} фильтрация одномерного временного ряда выполняется в несколько этапов.
+	Вначале строится матрица Ханкеля на основе теоремы Такенса \cite{noakes1991takens}.
+	Затем выполняется сингулярное разложение этой матрицы с сохранением некоторого числа первых компонент.
+	После этого исходный ряд восстанавливается как среднее значение элементов на побочных диагоналях.
+	
+	Модель нейронных дифференциальных уравнений (Neural Ordinary Differential Equation, NODE) \cite{Chen2018} объединяет в себе нейронные сети и дифференциальные уравнения. 
+	Помимо использования в моделировании динамических системах, она также применяется в задачах интерполяции, экстраполяции и генерации временных рядов, в частности в финансах, робототехнике \cite{xie2019neural, meleshkova2021application, du2020model}. 
+	Данный механизм является непрерывным аналогом сети ResNet \cite{wu2019wider}, в которой впервые использовались остаточные соединения для решения проблемы затухающих градиентов.
+	NODE объединяет в себе плюсы из обоих миров. 
+	Структура нейронной сети даёт высокую обобщающую способность, а структура дифференциального уравнения даёт твёрдый теоретический фундамент.
+	Однако у этого фреймворка есть и минусы. 
+	Существует класс функций, которые не представимы этой моделью \cite{Dupont2019}, а также она плохо устойчива к шуму в данных \cite{Liu2019}.
+	
+	Для решения вышеизложенных проблем было разработано новое семейство нейронных сетей ~--- стохастические дифференциальные уравнения (Neural Stochastic Differential Equation, NSDE).
+	Она внедряет шум в модель NODE с помощью стохастического дифференциального уравнения (SDE).
+	Данный фреймворк позволяет эксплуатировать такие регуляризаторы, как Dropout и слой гауссовского шума \cite{liu2018towards, baldi2013understanding}.
+	Однако остаётся вопрос: можно ли внедрить другие регуляризаторы (например, BatchNorm) и вышеупомянутые методы фильтрации в фреймворк NODE? 
+	В данной работе планируется ответить на этот вопрос.
+	
+	[TODO: Краткое описание вычислительного эксперимента]
+	
+	\section{Сопутствующие работы}
+	Наша работа вдохновлена успехом модели Neural ODE и её многочисленных модификаций: ANODE, Neural SDE, Neural CDE.
+	Мы стремимся перенести некоторые методы фильтрации временных рядов в модель нейронных дифференциальных уравнений.
+	Однако такие регуляризаторы, как пакетная нормализация и вейвлет преобразование, тяжело внедрить в Neural ODE ввиду отсутствия скрытой динамики.
 
-\begin{abstract}
-	\lipsum[1]
-\end{abstract}
-
-
-\keywords{First keyword \and Second keyword \and More}
-
-\section{Introduction}
-\lipsum[2]
-\lipsum[3]
-
-\section{Headings: first level}
-\label{sec:headings}
-
-\lipsum[4] See Section \ref{sec:headings}.
-
-\subsection{Headings: second level}
-\lipsum[5]
-\begin{equation}
-	\xi _{ij}(t)=P(x_{t}=i,x_{t+1}=j|y,v,w;\theta)= {\frac {\alpha _{i}(t)a^{w_t}_{ij}\beta _{j}(t+1)b^{v_{t+1}}_{j}(y_{t+1})}{\sum _{i=1}^{N} \sum _{j=1}^{N} \alpha _{i}(t)a^{w_t}_{ij}\beta _{j}(t+1)b^{v_{t+1}}_{j}(y_{t+1})}}
-\end{equation}
-
-\subsubsection{Headings: third level}
-\lipsum[6]
-
-\paragraph{Paragraph}
-\lipsum[7]
-
-
-
-\section{Examples of citations, figures, tables, references}
-\label{sec:others}
-
-\subsection{Citations}
-Citations use \verb+natbib+. The documentation may be found at
-\begin{center}
-	\url{http://mirrors.ctan.org/macros/latex/contrib/natbib/natnotes.pdf}
-\end{center}
-
-Here is an example usage of the two main commands (\verb+citet+ and \verb+citep+): Some people thought a thing \citep{kour2014real, hadash2018estimate} but other people thought something else \citep{kour2014fast}. Many people have speculated that if we knew exactly why \citet{kour2014fast} thought this\dots
-
-\subsection{Figures}
-\lipsum[10]
-See Figure \ref{fig:fig1}. Here is how you add footnotes. \footnote{Sample of the first footnote.}
-\lipsum[11]
-
-\begin{figure}
-	\centering
-	\includegraphics[width=0.5\textwidth]{../figures/log_reg_cs_exp.eps}
-	\caption{Sample figure caption.}
-	\label{fig:fig1}
-\end{figure}
-
-\subsection{Tables}
-See awesome Table~\ref{tab:table}.
-
-The documentation for \verb+booktabs+ (`Publication quality tables in LaTeX') is available from:
-\begin{center}
-	\url{https://www.ctan.org/pkg/booktabs}
-\end{center}
-
-
-\begin{table}
-	\caption{Sample table title}
-	\centering
-	\begin{tabular}{lll}
-		\toprule
-		\multicolumn{2}{c}{Part}                   \\
-		\cmidrule(r){1-2}
-		Name     & Description     & Size ($\mu$m) \\
-		\midrule
-		Dendrite & Input terminal  & $\sim$100     \\
-		Axon     & Output terminal & $\sim$10      \\
-		Soma     & Cell body       & up to $10^6$  \\
-		\bottomrule
-	\end{tabular}
-	\label{tab:table}
-\end{table}
-
-\subsection{Lists}
-\begin{itemize}
-	\item Lorem ipsum dolor sit amet
-	\item consectetur adipiscing elit.
-	\item Aliquam dignissim blandit est, in dictum tortor gravida eget. In ac rutrum magna.
-\end{itemize}
-
-
-\bibliographystyle{unsrtnat}
-\bibliography{references}
-
+	\subsection{Neural ODE}
+	Как было сказано ранее, модель нейронных дифференциальных уравнений является непрерывным расширением модели ResNet, в которой параметризуется производная скрытого состояния.
+	\begin{equation*} \label{eq:resnet_step}
+		\bh_{t+1} = \bh_t + f_{\theta_t}(\bh_t).
+	\end{equation*}
+	Разность $\bh_{t+1} - \bh_t$ можно интерпретировать как дискретизацию производной $\bh'(t)$ c разницей во времени $\Delta t = 1$. Устремив $\Delta t \rightarrow 0$, получим:
+	\begin{equation*} \label{eq:node}
+		\lim_{\Delta t \rightarrow 0} \dfrac{\bh_{t + \Delta t} - \bh_t}{\Delta t} = \dfrac{d\bh(t)}{dt} = f_{\theta}(\bh(t), t)
+	\end{equation*}
+	Модель нейронных дифференциальных уравнений аппроксимирует отображение $\bx \rightarrow \by$ путём обучения нейронной сети $f_\theta$ и линейных отображений $l_\theta^1, \, l_\theta^2$.
+	$$ \by \approx l_\theta^2(\bh_T), \text{ где } \bh_T = \bh_0 + \int_{0}^{T} f_\theta(\bh_t) dt \text{ и } \bh_0 = l_\theta^1(\bx)$$
+	
+	\subsection{Neural SDE}
+	Конструкция выглядит следующим образом.
+	Зафиксируем момент времени $T > 0$.
+	Обозначим за $(\bY_t, t \in [0, T]$ искомый $y$-мерный случайный процесс, где $y$ ~--- размерность данных.
+	
+	Пусть $(\bW_t, t \in [0, T])$  ~--- $w$-мерный винеровский процесс и $V \sim \mathcal{N}(0, I_v)$ ~--- $v$-мерный стандартный гауссовский вектор. 
+	Пусть
+	$$ \zeta_\theta: \dR^v \rightarrow \dR^d, \; \mu_\theta: [0, T] \times \dR^d \rightarrow \dR^d, \; \sigma_\theta: [0, T] \times \dR^d \rightarrow \dR^{d \times w}, \; l_\theta: \dR^d \rightarrow \dR^y,$$
+	где $d$ ~--- размерность скрытого состояния, $\zeta_\theta, \mu_\theta, \sigma_\theta$ ~--- нейронные сети, $l_\theta$ ~--- линейное преобразование.
+	Тогда модель Neural SDE имеет следующий вид:  
+	$$ \bh_0 = \zeta_\theta(V), \quad d\bh_t = \mu_\theta(t, \bh_t)dt + \sigma_\theta(t, \bh_t) \circ d\bW_t, \quad \widehat{\bY_t} = l_\theta(\bh_t).$$
+	Решением SDE служит случайный $d$-мерный процесс $(\bh_t, t \in [0, T])$.
+	Модель обучается таким образом, что $\widehat{\bY} \approx \bY$
+	
+	В работе \cite{Liu2019} показано, что добавление гауссовского шума выражается следующим образом: $\sigma(t, \bh_t) = \Sigma(t), \:$ где $\Sigma(t)$ ~--- диагональная матрица с элементами, отвечающими за дисперсию шума, добавляемого к вектору скрытого состояния.
+	А слой Dropout представляется так: $\sigma(t, \bh_t) = \sqrt{\dfrac{1 - p}{p}} \mu_\theta(t, \bh_t)$, где $p$ ~--- вероятность успеха в схеме испытаний Бернулли. 
+	
+	\subsection{ResNet}
+	Нетрудно заметить, что блок \ref{eq:resnet_step} модели ResNet соответствует одному шагу метода Эйлера численного интегрирования уравнения \ref{eq:node}.
+	Учитывая этот факт и то, что существует множество регуляризаторов для данного семейства моделей [ссылки]
+	
+	\section{Постановка задачи}
+	Бегло написать про $\bx_t = \bz_t + \boldsymbol{\epsilon_t}$. 
+	Решается задача предсказания временного ряда (вообще зависит от выбранного датасета, возможно будет задача классификации)
+	
+	\section{Вычислительный эксперимент}
+	Основная идея: шум + NODE = КАПУТ, регуляризация = ГУД.
+	
+	\section{Заключение}
+	TODO
+	
+	\bibliographystyle{unsrtnat}
+	\bibliography{references.bib}
+	
 \end{document}
