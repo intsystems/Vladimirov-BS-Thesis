@@ -113,11 +113,46 @@
 	Учитывая этот факт и то, что существует множество регуляризаторов для данного семейства моделей: DropBlock, Shake-Shake [TODO: ссылки]; хочется найти их аналоги для фреймворка Neural ODE.
 	
 	\section{Постановка задачи}
-	Бегло написать про $\bx_t = \bz_t + \boldsymbol{\epsilon_t}$. 
-	Решается задача предсказания временного ряда (вообще зависит от выбранного датасета, возможно будет задача классификации)
+	Общая схема данных в задаче удаления шума имеет вид:  
+	$$\bx_t = \bs_t + \boldsymbol{\epsilon_t},$$
+	где $\bx_t$ ~--- наблюдаемое значение временного ряда, $\boldsymbol{\epsilon_t}$ ~--- многомерный винеровский процесс, $\bs_t$ ~--- истинное значение временного ряда.
+	Задача удаления шума заключается в подавлении шумовой составляющей временного ряда $\bx_t$ и восстановлении $\bs_t$.
 	
 	\section{Вычислительный эксперимент}
-	Основная идея: шум + NODE = КАПУТ, регуляризация = ГУД.
+	Сначала покажем, что качество модели Neural ODE уменьшается при наличии шума в данных.
+	Взят синтетический временной ряд "Спираль", и его зашумлённый вариант с добавленным нормальным шумом $\mathcal{N}(0, 0.04^2)$ ( график \ref{fig:spirals}).
+	
+	\begin{figure}[bhtp]
+		\centering
+		\subfloat[Временной ряд "Спираль"]{%
+			\includegraphics[width=0.48\linewidth]{Spirals.png}%
+		}
+		\subfloat[Зашумлённая спираль]{%
+			\includegraphics[width=0.48\linewidth]{Noisy spirals.png}
+		}
+		\caption{Синтетические данные}
+		\label{fig:spirals}
+	\end{figure}
+
+	Результат применения модели Neural ODE и графики функции потерь при обучении приведены на графиках \ref{fig:spirals_approximation} и \ref{fig:train_losses}.
+	
+	\begin{figure}[bhtp]
+		\centering
+		\subfloat[NODE на чистых данных]{%
+			\includegraphics[width=0.5\linewidth]{Spirals vs ODE Spirals.png}%
+		}
+		\subfloat[NODE на зашумлённых данных]{%
+			\includegraphics[width=0.5\linewidth]{Noisy Spirals vs ODE Spirals.png}
+		}
+		\caption{Результаты предсказания}
+		\label{fig:spirals_approximation}
+	\end{figure}
+	
+	\begin{figure}[bhtp]
+		\includegraphics[width=0.95\linewidth]{train_losses.png}
+		\caption{Функция потерь при обучении Neural ODE на незашумлённых и зашумлённых данных}
+		\label{fig:train_losses}
+	\end{figure}
 	
 	\section{Заключение}
 	TODO
