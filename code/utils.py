@@ -183,7 +183,7 @@ def proj_to_roi(in_vals: list):
 
     x : tensor, shape (batch,filter,chans,time)
         The signal to project
-    proj_mat : tensor, shape (batch,roi,chans)
+    proj_mat : tensor, shape (batch,1,roi,chans)
         The projection matrix from channels to ROIs
     '''
     x, proj_mat = in_vals[:2]
@@ -194,7 +194,7 @@ def proj_to_roi(in_vals: list):
     for i in range(shape_x[1]):
         output_list.append(proj_mat[:, 0, ...] @ x[:, i, ...])
 
-    x_out = torch.cat(output_list, dim=1)
+    x_out = torch.stack(output_list, dim=1)
     return x_out
 
 
@@ -245,7 +245,9 @@ def proj_mats_good_rois(patient_ids, dipole_dens_thresh=.1, n_chans_all=150,
             if chan_cut_thres is not None:
                 all_inds = np.arange(df_curr.shape[0])
                 inds2drop = np.union1d(inds2drop, all_inds[all_inds > chan_cut_thres])
-            df_curr.iloc[inds2drop] = 0
+
+            if len(inds2drop) > 0:
+                df_curr.iloc[inds2drop] = 0
             # Renormalize across ROIs
             sum_vals = df_curr.sum(axis=0).values
             for i in range(len(sum_vals)):
@@ -1050,3 +1052,28 @@ def frac_combine_df(root_path, roi_proj_loadpath, dipole_dens_thresh=.07, accura
     df_plt['Frac'] = pd.to_numeric(df_plt['Frac'])
 
     df_plt.to_csv(root_path + '/frac_overlap_df.csv')
+
+
+def gen_dropout_mask(input_size, hidden_size, is_training, p, some_existing_tensor):
+    """
+    is_training: if True, gen masks from Bernoulli
+                 if False, gen masks consisting of (1-p)
+
+    return dropout masks of size input_size, hidden_size if p is not None
+    return one masks if p is None
+    """
+    ### your code here
+    mask0 = some_existing_tensor.new_ones(input_size)
+    mask1 = some_existing_tensor.new_ones(hidden_size)
+    if p:
+        if is_training:
+            mask0 *= p
+            mask0 = torch.bernoulli(mask0)
+            mask1 *= p
+            mask1 = torch.bernoulli(mask1)
+        else:
+            mask0 *= (1 - p)
+            # mask0 = torch.bernoulli_(mask0)
+            mask1 *= (1 - p)
+            # mask1 = torch.bernoulli_(mask1)
+    return mask0, mask1
