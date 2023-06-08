@@ -11,7 +11,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 from torch.utils.data.dataset import random_split
 
-from htnet import HTNet, HTNetWithRNN, HTNetWithNCDE
+from htnet import HTNet, HTNetWithRNN, HTNetWithNCDE, HTNetWithS4
 from utils import load_data, folds_choose_subjects, subject_data_inds, roi_proj_rf, \
     get_custom_motor_rois, proj_mats_good_rois, to_categorical
 
@@ -72,6 +72,12 @@ def cnn_model(X_train, Y_train, X_validate, Y_validate, X_test, Y_test, chckpt_p
                       dropoutType=dropoutType, kernLength_sep=kernLength_sep,
                       ROIs=nROIs, useHilbert=useHilbert, projectROIs=projectROIs, do_log=do_log,
                       compute_val=compute_val, data_srate=ecog_srate, k_signals=X_train.shape[2]).to(DEVICE)
+    elif modeltype == 's4':
+        model = HTNetWithS4(nb_classes, Chans=X_train.shape[1], Samples=X_train.shape[-1],
+                              dropoutRate=dropoutRate, kernLength=kernLength, F1=F1, D=D, F2=F2,
+                              dropoutType=dropoutType, kernLength_sep=kernLength_sep,
+                              ROIs=nROIs, useHilbert=useHilbert, projectROIs=projectROIs, do_log=do_log,
+                              compute_val=compute_val, data_srate=ecog_srate, k_signals=X_train.shape[2]).to(DEVICE)
     else:
         raise ValueError('Wrong modeltype!')
 

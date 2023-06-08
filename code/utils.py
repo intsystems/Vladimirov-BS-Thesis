@@ -1062,18 +1062,18 @@ def gen_dropout_mask(input_size, hidden_size, is_training, p, some_existing_tens
     return dropout masks of size input_size, hidden_size if p is not None
     return one masks if p is None
     """
-    ### your code here
     mask0 = some_existing_tensor.new_ones(input_size)
     mask1 = some_existing_tensor.new_ones(hidden_size)
     if p:
         if is_training:
             mask0 *= p
             mask0 = torch.bernoulli(mask0)
+            mask0 /= (1 - p)
             mask1 *= p
             mask1 = torch.bernoulli(mask1)
-        else:
-            mask0 *= (1 - p)
-            # mask0 = torch.bernoulli_(mask0)
-            mask1 *= (1 - p)
-            # mask1 = torch.bernoulli_(mask1)
+            mask1 /= (1 - p)
+        # else:
+        #     mask0 *= (1 - p)
+        #     mask1 *= (1 - p)
+
     return mask0, mask1

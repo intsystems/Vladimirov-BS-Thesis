@@ -24,7 +24,7 @@ hyps_same = {'F1' : 19, 'dropoutRate' : 0.342, 'kernLength' : 24,
              'D' : 2, 'n_estimators' : 240, 'max_depth' : 6}
 hyps_same['F2'] = hyps_same['F1'] * hyps_same['D'] # F2 = F1 * D
 epochs_same = 200
-patience_same = 20
+patience_same = 10
 
 ### Fine-tune same modality decoders ###
 model_type_finetune = 'eegnet_hilb' # NN model type to fine-tune (must be either 'eegnet_hilb' or 'eegnet')
@@ -61,7 +61,7 @@ for s,val in enumerate(spec_meas_same):
     if not os.path.exists(multi_sp):
         os.makedirs(multi_sp)
     combined_sbjs = True
-    models = ['conv']#['conv', 'rnn', 'ncde'] # avoid fitting non-HTNet models again
+    models = ['s4']#['conv', 'rnn', 'ncde', 's4'] # avoid fitting non-HTNet models again
     accuracy = run_nn_models(multi_sp, n_folds_same, combined_sbjs, ecog_lp, ecog_roi_proj_lp, test_day = 'last', do_log=do_log,
                   epochs=epochs_same, patience=patience_same, models=models, compute_val=compute_val,
                   F1 = hyps_same['F1'], dropoutRate = hyps_same['dropoutRate'], kernLength = hyps_same['kernLength'],
@@ -76,6 +76,6 @@ except BaseException:
     pass
 
 #### Pre-compute difference spectrograms for ECoG and EEG datasets ####
-diff_specs(rootpath + dataset + '/combined_sbjs_power/', ecog_lp, ecog=True)
+#diff_specs(rootpath + dataset + '/combined_sbjs_power/', ecog_lp, ecog=True)
 
 print('Elapsed time: ' + str(time.time() - t_start))

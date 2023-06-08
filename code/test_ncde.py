@@ -30,6 +30,8 @@ class F(torch.nn.Module):
 
 
 func = F()
+print(sum(p.numel() for p in func.parameters() if p.requires_grad))
+
 z0 = torch.rand(batch, hidden_channels)
 
 # Integrate it

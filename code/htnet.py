@@ -7,6 +7,7 @@ import torch.nn.functional as F
 
 # Load utility functions for custom HTNet layers
 from utils import apply_hilbert_tf, proj_to_roi, gen_dropout_mask
+from s4 import S4Block
 
 
 class HTNet(nn.Module):
@@ -66,12 +67,6 @@ class HTNet(nn.Module):
         self.dense = nn.utils.weight_norm(self.dense, name='weight', dim=0)
         self.softmax = nn.Softmax(dim=1)
 
-    # def max_norm_adjusting(self, weights, max_norm):
-    #     with torch.no_grad():
-    #         norm = weights.norm(2, dim=0, keepdim=True).clamp(min=max_norm / 2)
-    #         desired = torch.clamp(norm, max=max_norm)
-    #         weights *= (desired / norm)
-
     def forward(self, x, roi=None):
         # x.shape = (batch_size, 1, Chans, Samples)
         # roi.shape = (batch_size, 1, ROIs, Chans)
@@ -90,16 +85,13 @@ class HTNet(nn.Module):
 
         x = self.batchnorm1(x)
 
-        #self.max_norm_adjusting(self.depthwise_conv.weight, 1.0)
         x = self.depthwise_conv(x)
         x = self.sequential1(x)
         x = self.separable_conv(x)
         x = self.sequential2(x)
         x = self.flatten(x)
 
-        #self.max_norm_adjusting(self.dense.weight, self.max_dense_layer_norm)
         x = self.dense(x)
-        x = self.softmax(x)
         return x
 
 
@@ -108,7 +100,8 @@ class FastRNNLayer(nn.Module):
         super(FastRNNLayer, self).__init__()
         self.module = nn.LSTM(input_size, hidden_size, batch_first=True)
         self.dense = nn.Linear(hidden_size, proj_size)
-        self.dropout = dropout
+        self.dense = nn.utils.weight_norm(self.dense, name='weight')
+        self.dropout = 1-dropout
         self.layer_names = ['weight_hh_l0', 'weight_ih_l0']
         for layer in self.layer_names:
             # Makes a copy of the weights of the selected layers.
@@ -174,11 +167,11 @@ class HTNetWithRNN(HTNet):
                          norm_rate, dropoutType, ROIs, useHilbert, projectROIs, kernLength_sep,
                          do_log, compute_val, data_srate, base_split)
         self.temporal_conv = nn.Sequential(
-            RNNTemporal(1, k_signals, hid_size, k_signals, 0),
+            RNNTemporal(1, k_signals, hid_size, k_signals, dropoutRate),
             nn.Conv2d(1, F1, 1)
         )
         self.separable_conv = nn.Sequential(
-            RNNTemporal(F1 * D, 1, hid_size, 1, 0),
+            RNNTemporal(F1 * D, 1, hid_size, 1, dropoutRate),
             nn.Conv2d(F1 * D, F2, 1)
         )
 
@@ -189,9 +182,11 @@ class NeuralCDEFunc(nn.Module):
         self.hid_size = hid_size
         self.in_channels = in_channels
         self.linear = nn.Linear(hid_size, hid_size * in_channels)
+        self.activ_func = nn.Tanh()
 
     def forward(self, t, z):
-        return self.linear(z).view(-1, self.hid_size, self.in_channels)
+        z = self.linear(z).view(-1, self.hid_size, self.in_channels)
+        return self.activ_func(z)
 
 
 class NeuralCDE(nn.Module):
@@ -202,8 +197,9 @@ class NeuralCDE(nn.Module):
         self.seq_len = seq_len
         self.in_channels = in_channels + 1
 
-        self.func = NeuralCDEFunc(hidden_size, in_channels)
+        self.func = NeuralCDEFunc(hidden_size, self.in_channels)
         self.dense = nn.Linear(hidden_size, out_channels)
+        self.dense = nn.utils.weight_norm(self.dense, name='weight')
 
     def forward(self, inp):
         # inp.shape = (batch_size, seq_len, in_channels)
@@ -219,8 +215,9 @@ class NeuralCDE(nn.Module):
         coeffs = torchcde.hermite_cubic_coefficients_with_backward_differences(inp, t)
         X = torchcde.CubicSpline(coeffs, t)
         z0 = torch.rand(batch_size, self.hidden_size, device=inp.device)
+        adjoint_params = tuple(self.func.parameters()) + (coeffs,)
 
-        outp = torchcde.cdeint(X=X, func=self.func, z0=z0, t=X._t, adjoint=True, method='rk4')
+        outp = torchcde.cdeint(X=X, func=self.func, z0=z0, t=X._t, method='rk4', adjoint=False)
         return self.dense(outp)
 
 
@@ -248,7 +245,7 @@ class HTNetWithNCDE(HTNet):
                  D=2, F2=16, norm_rate=0.25, dropoutType='Dropout',
                  ROIs=100, useHilbert=False, projectROIs=False, kernLength_sep=16,
                  do_log=False, compute_val='power', data_srate=500, base_split=4, hid_size=32, k_signals=0):
-        super().__init__(self, nb_classes, Chans, Samples, dropoutRate, kernLength, F1, D, F2,
+        super().__init__(nb_classes, Chans, Samples, dropoutRate, kernLength, F1, D, F2,
                          norm_rate, dropoutType, ROIs, useHilbert, projectROIs, kernLength_sep,
                          do_log, compute_val, data_srate, base_split)
 
@@ -262,12 +259,45 @@ class HTNetWithNCDE(HTNet):
         )
 
 
+class S4Temporal(nn.Module):
+    def __init__(self, in_channels, input_size, dropout):
+        super().__init__()
+        self.s4_model = S4Block(
+            d_model=input_size*in_channels,
+            final_act='id',
+            transposed=False,
+            weight_norm=True,
+            dropout=dropout
+        )
+
+    def forward(self, inp):
+        # inp.shape = (batch_size, in_channels, in_dim, seq_len)
+        # input_dim = in_channels * in_dim, output_dim = in_channels * proj_size
+        # RNN: (batch_size, seq_len, input_dim) ==> (batch_size, seq_len, output_dim)
+        # outp.shape = (batch_size, in_channels, out_dim, seq_len)
+        batch_size, in_channels, _, seq_len = inp.shape
+        # inp.shape = (batch_size, seq_len, in_channels, in_dim)
+        inp = torch.transpose(torch.transpose(inp, 2, 3), 1, 2)
+        inp = inp.reshape(batch_size, seq_len, -1)
+        outp, _ = self.s4_model(inp)
+        return torch.transpose(outp, 1, 2).reshape(batch_size, in_channels, -1, seq_len)
+
+
 class HTNetWithS4(HTNet):
     def __init__(self, nb_classes, Chans=64, Samples=128,
                  dropoutRate=0.5, kernLength=64, F1=8,
                  D=2, F2=16, norm_rate=0.25, dropoutType='Dropout',
                  ROIs=100, useHilbert=False, projectROIs=False, kernLength_sep=16,
-                 do_log=False, compute_val='power', data_srate=500, base_split=4):
-        super().__init__(self, nb_classes, Chans, Samples, dropoutRate, kernLength, F1, D, F2,
+                 do_log=False, compute_val='power', data_srate=500, base_split=4, k_signals=1):
+        super().__init__(nb_classes, Chans, Samples, dropoutRate, kernLength, F1, D, F2,
                          norm_rate, dropoutType, ROIs, useHilbert, projectROIs, kernLength_sep,
                          do_log, compute_val, data_srate, base_split)
+
+        self.temporal_conv = nn.Sequential(
+            S4Temporal(1, k_signals, dropoutRate),
+            nn.Conv2d(1, F1, 1)
+        )
+        self.separable_conv = nn.Sequential(
+            S4Temporal(F1 * D, 1, dropoutRate),
+            nn.Conv2d(F1 * D, F2, 1)
+        )
