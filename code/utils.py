@@ -7,6 +7,8 @@ import pickle, os, mne, argparse, glob, natsort, pyriemann
 os.environ["OMP_NUM_THREADS"] = "1"
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 import torch
 
 from sklearn.metrics import accuracy_score
@@ -1064,16 +1066,247 @@ def gen_dropout_mask(input_size, hidden_size, is_training, p, some_existing_tens
     """
     mask0 = some_existing_tensor.new_ones(input_size)
     mask1 = some_existing_tensor.new_ones(hidden_size)
-    if p:
-        if is_training:
-            mask0 *= p
-            mask0 = torch.bernoulli(mask0)
-            mask0 /= (1 - p)
-            mask1 *= p
-            mask1 = torch.bernoulli(mask1)
-            mask1 /= (1 - p)
-        # else:
-        #     mask0 *= (1 - p)
-        #     mask1 *= (1 - p)
+    if p and is_training:
+        mask0 *= p
+        mask0 = torch.bernoulli(mask0)
+        mask0 /= p
+        mask1 *= p
+        mask1 = torch.bernoulli(mask1)
+        mask1 /= p
 
     return mask0, mask1
+
+
+def plot_model_accs(root_path, dataset, nb_classes=2, compare_models=True,
+                    dpi_plt=300):
+    """
+    Plot test accuracy across decoder types.
+    Inputs:
+        nb_classes : number of label types (currently set to 2: move, rest)
+        compare_models : if True, plot across different models; if False, plot across different HilbertNet measures
+    """
+
+    #     root_path = '/data2/users/stepeter/cnn_hilb_datasets/'
+    #     dataset = 'naturalistic_v3'
+    replace_str = '___'
+    suffix_lp = '/' + replace_str + '/'  # single_sbjs, combined_sbjs
+
+    test_types = ['combined_sbjs']
+    suffix_lst = ['Power']  # Needed if models used are the same (for axis label)
+    n_eeg_sbjs = 15
+    conds = ['Generalized decoder,\nsame modality']
+    cond_lets = ['(A)', '(B)\n', '(C)\n']
+    conds2 = ['(D)', '(E)', '(F)']
+
+    # Load variables from param file
+    file_pkl = open(root_path + dataset + '/combined_sbjs_power/param_file.pkl', 'rb')
+    params_dict = pickle.load(file_pkl)
+    file_pkl.close()
+
+    rand_seed = params_dict['rand_seed']
+    n_folds = params_dict['n_folds']
+    pats_ids_in = params_dict['pats_ids_in']
+    combined_sbjs = params_dict['combined_sbjs']
+    test_day = params_dict['test_day']
+    n_test = params_dict['n_test']
+    n_val = params_dict['n_val']
+    lp = [root_path + dataset + suffix_lp[:-1] + '_power/']
+
+    if compare_models:
+        models_used = params_dict['models']
+        lp *= len(models_used)
+    else:
+        lp = [root_path + dataset + suffix_lp, root_path + dataset + suffix_lp[:-1] + '_power_log/',
+              root_path + dataset + suffix_lp[:-1] + '_relative_power/',
+              root_path + dataset + suffix_lp[:-1] + '_phase/', root_path + dataset + suffix_lp[:-1] + '_freqslide/']
+        models_used = ['eegnet_hilb'] * len(lp)
+
+    model_dict = {'eegnet_hilb': 'HTNet', 'eegnet': 'EEGNet', 'rf': 'Random\nForest',
+                  'riemann': 'Minimum\nDistance', 'phase': 'Phase', 'relative_power': 'Rel.\nPower',
+                  'freqslide': 'Freq.', 'power_log': 'Log\nPower', '': 'Power'}  # Dictionary for plot legend
+
+    # Determine test fold subject(s) using saved parameters
+    np.random.seed(rand_seed)
+    sbj_inds_all_train, sbj_inds_all_val, sbj_inds_all_test = folds_choose_subjects(n_folds, pats_ids_in,
+                                                                                    n_test=n_test, n_val=n_val)
+    sbj_inds_all_test_sm = [val[0] for val in sbj_inds_all_test]
+    test_sbj_folds = np.asarray(sbj_inds_all_test_sm)
+
+    # Create labels for ECoG and EEG participants
+    ecog_sbjs, eeg_sbjs = [], []
+    for i in range(len(pats_ids_in)):
+        ecog_sbjs.append('EC' + str(i + 1).zfill(2))
+    for i in range(n_eeg_sbjs):
+        eeg_sbjs.append('EE' + str(i + 1).zfill(2))
+
+    # Create labels for model types or measures computed
+    col_labels = [model_dict[val] for val in models_used]
+    if len(np.unique(np.asarray(col_labels))) != len(col_labels):
+        # If there are duplicate column labels, add different suffix strings
+        col_labels = [suffix_lst[i] for i, val in enumerate(col_labels)]
+
+    # Plot data
+    title_pads = [18, 8, 8]
+    title_y = [1.2, 1.125, 1.125]
+    hspace_val = .8 if compare_models else .6
+    use_asterisks = True
+    fig, ax = plt.subplots(2, len(test_types),
+                           dpi=dpi_plt, figsize=(7.5, 4),
+                           gridspec_kw={'wspace': .1, 'hspace': hspace_val})
+
+    acc_types = ['Train', 'Val', 'Test']
+    test_ind = np.nonzero(np.asarray(acc_types) == 'Test')[0]
+    dfs_all = []
+    for ii, test_type in enumerate(test_types):
+        n_accs = len(acc_types)
+        n_models = len(models_used)
+        if test_type != 'single_sbjs':
+            if test_type == 'ecog2eeg':
+                accs_all = np.zeros([n_eeg_sbjs, n_accs, n_models])  # middle dim is train,val,test accuracies
+            else:
+                accs_all = np.zeros([n_folds, n_accs, n_models])
+            accs_all[:] = np.nan
+            for i, model_type in enumerate(models_used):
+                lp_curr = lp[i]
+                if test_type == 'ecog2eeg':
+                    lp_curr = '/'.join(lp_curr.split('/')[:-2]) + '/'
+                    mod_type_curr = '' if model_type == 'eegnet_hilb' else '_' + model_type
+                    if not compare_models:
+                        lp_spl = lp_curr.split('/')
+                        lp_spl[:-2] + lp_spl[-1:]
+                        lp_curr = '/'.join(lp_spl[:-2] + lp_spl[-1:])
+                        suff = lp_spl[-2]
+                    else:
+                        suff = '_power'
+                        ##########Use relative power instead for comparison##########
+                        if mod_type_curr == '':
+                            suff = '_relative_power'
+                        ##########Use relative power instead for comparison##########
+                    tmp_vals = np.load(lp_curr + 'accs_ecogtransfer' + suff + mod_type_curr + '.npy')
+                    for p in range(n_eeg_sbjs):
+                        accs_all[p, test_ind, i] = np.mean(tmp_vals[:, p])
+                else:
+                    lp_curr = lp_curr.replace(replace_str, test_type)
+                    tmp_vals = np.load(lp_curr + 'acc_gen_' + model_type + '_' + str(n_folds) + '.npy')
+                    for j in range(n_accs):
+                        for p in range(n_folds):
+                            accs_all[p, j, i] = tmp_vals[p, j]
+        else:
+            n_folds_sbj = n_folds // len(pats_ids_in)
+            accs_all = np.zeros([len(pats_ids_in), n_accs, n_models, n_folds_sbj])
+            accs_all[:] = np.nan
+            for i, model_type in enumerate(models_used):
+                for s, pat_curr in enumerate(pats_ids_in):
+                    lp_curr = lp[i]
+                    lp_curr = lp_curr.replace(replace_str, test_type)
+                    tmp_vals = np.load(
+                        lp_curr + 'acc_' + model_type + '_' + pat_curr + '_testday_' + str(test_day) + '.npy')
+                    for j in range(n_accs):
+                        for p in range(n_folds_sbj):
+                            accs_all[s, j, i, p] = tmp_vals[p, j]
+
+        # Average results for each participant
+        if test_type == 'ecog2eeg':
+            ave_vals_test_sbj = accs_all[:, test_ind, :].squeeze()
+        else:
+            n_subjs = len(pats_ids_in)
+            if test_type == 'combined_sbjs':
+                n_folds_sbj = n_folds // n_subjs
+
+            ave_vals_test = np.zeros([n_subjs * n_folds_sbj, len(models_used)])
+            ave_vals_test_sbj = np.zeros([n_subjs, len(models_used)])
+
+            if test_type == 'combined_sbjs':
+                for sbj in range(len(pats_ids_in)):
+                    folds_sbj = np.nonzero(test_sbj_folds == sbj)[0]
+                    for j, modtype in enumerate(models_used):
+                        ave_vals_test_sbj[sbj, j] = round(np.mean(accs_all[folds_sbj, test_ind, j], axis=0), 2)
+                        for k in range(n_folds_sbj):
+                            ave_vals_test[sbj + (k * n_subjs), j] = accs_all[folds_sbj[k], test_ind, j]
+            else:
+                for i in range(accs_all.shape[0]):
+                    for j in range(accs_all.shape[2]):
+                        ave_vals_test_sbj[i, j] = round(np.mean(accs_all[i, test_ind, j, :], axis=-1)[0], 2)
+                        for k in range(n_folds_sbj):
+                            ave_vals_test[i + (k * n_subjs), j] = accs_all[i, test_ind, j, k]
+
+        ## Boxplots (top row)
+        if test_type == 'ecog2eeg':
+            curr_subjs = eeg_sbjs
+        else:
+            curr_subjs = ecog_sbjs
+        patIDs_lst = []
+        for val in curr_subjs:
+            patIDs_lst.extend([val] * len(models_used))
+
+        if (test_type == 'ecog2eeg') & compare_models:
+            col_labels_plt = ['HilbertNet\n(Rel. Power)' if val == 'HilbertNet' else val for val in col_labels]
+        else:
+            col_labels_plt = col_labels.copy()
+        vals_np = np.asarray([ave_vals_test_sbj.flatten().tolist()] + [patIDs_lst] + \
+                             [col_labels_plt * len(curr_subjs)]).T
+        df_sbj = pd.DataFrame(vals_np, columns=['Accuracy', 'sbj', 'Models'])
+        df_sbj['Accuracy'] = pd.to_numeric(df_sbj['Accuracy'])
+
+        df = pd.DataFrame(ave_vals_test_sbj, index=curr_subjs, columns=col_labels_plt)
+        ax[0, ii].axhline(1 / nb_classes, c='k', linestyle='--')
+        palette = sns.color_palette("colorblind", n_colors=df.shape[1])
+        palette2 = palette.copy()
+        palette2.reverse()
+        sns.boxplot(data=df, ax=ax[0, ii], palette=palette, showfliers=False, whis=0)
+        #     palette = sns.color_palette("Paired")
+        sns.swarmplot(x='Models', y='Accuracy', s=4, data=df_sbj, ax=ax[0, ii],
+                      color='k')  # , palette=palette, hue='sbj')
+        # ax.legend_.remove()
+
+        ax[0, ii].set_ylabel('Test Accuracy', fontsize=9)
+        ax[0, ii].set_ylim([(1 / nb_classes) - .05, 1.065])
+        ax[0, ii].set_yticks([.5, .75, 1])
+        ax[0, ii].spines['right'].set_visible(False)
+        ax[0, ii].spines['top'].set_visible(False)
+        ax[0, ii].spines['left'].set_bounds((1 / nb_classes) - .05, 1)
+        ax[0, ii].tick_params(axis='both', labelsize=8)
+        ax[0, ii].set_xticklabels(ax[0, ii].get_xticklabels(), rotation=40, ha="center")
+        ax[0, ii].set_xlabel('')
+        if ii > 0:
+            ax[0, ii].set_ylabel('')
+            ax[0, ii].set_yticklabels([])
+        ax[0, ii].tick_params(axis='x', pad=0)
+        ax[0, ii].set_title(cond_lets[ii], fontsize=10, x=0, fontweight='bold', pad=title_pads[ii], color='dimgray')
+        ax[0, ii].text((len(lp) / 2) - .5, title_y[ii], conds[ii], fontsize=10, ha='center', fontweight='bold')
+
+        ## Subject-by-subject lineplots (bottom row)
+        col_labels_plt = df_sbj['Models'].unique().tolist().copy()
+        if compare_models:
+            col_labels_plt.reverse()
+        ax[1, ii].axhline(1 / nb_classes, c='k', linestyle='--')
+        sns.lineplot(x='sbj', y='Accuracy', hue='Models', data=df_sbj,
+                     ax=ax[1, ii], marker='o', markersize=5, linewidth=1,
+                     hue_order=col_labels_plt, palette=palette2)
+        leg = ax[1, ii].legend()
+        leg_lines = leg.get_lines()
+        for i in range(len(models_used)):
+            ax[1, ii].lines[i + 1].set_linestyle("None")  # 'None') #
+            leg_lines[i].set_linestyle("None")  # 'None') #
+        # plt.xticks(np.arange(1,13))
+
+        ax[1, ii].set_ylim([(1 / nb_classes) - .05, 1])
+        ax[1, ii].set_ylabel('Test Accuracy', fontsize=9)
+        ax[1, ii].set_yticks([.5, .75, 1])
+        ax[1, ii].spines['right'].set_visible(False)
+        ax[1, ii].spines['top'].set_visible(False)
+        ax[1, ii].tick_params(axis='both', labelsize=8)
+        ax[1, ii].legend_.remove()
+        ax[1, ii].set_xlabel('')
+        ax[1, ii].set_title(conds2[ii], fontsize=10, fontweight='bold', pad=8, color='dimgray', x=0)
+        for tick in ax[1, ii].get_xticklabels():
+            tick.set_rotation(60)
+        ax[1, ii].tick_params(axis='x', pad=0)
+        if ii > 0:
+            ax[1, ii].set_ylabel('')
+            ax[1, ii].set_yticklabels([])
+
+        # Save dataframe for stats
+        dfs_all.append(df_sbj)
+    plt.show()
+    return fig, dfs_all

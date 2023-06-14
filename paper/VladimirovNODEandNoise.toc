@@ -1,0 +1,29 @@
+\babel@toc {russian}{}\relax 
+\contentsline {section}{\numberline {}Введение}{4}{}%
+\contentsline {paragraph}{Актуальность темы.}{4}{}%
+\contentsline {paragraph}{Цель работы.}{5}{}%
+\contentsline {paragraph}{Методы исследования.}{5}{}%
+\contentsline {paragraph}{Основные положения, выносимые на защиту.}{5}{}%
+\contentsline {paragraph}{Научная новизна.}{5}{}%
+\contentsline {paragraph}{Теоретическая значимость.}{5}{}%
+\contentsline {paragraph}{Практическая значимость.}{5}{}%
+\contentsline {paragraph}{Степень достоверности и апробация работы.}{6}{}%
+\contentsline {section}{\numberline {}Обозначения}{7}{}%
+\contentsline {section}{\numberline {1}Постановка задачи}{8}{}%
+\contentsline {section}{\numberline {2}Обзор существующих алгоритмов }{10}{}%
+\contentsline {subsection}{\numberline {2.1}Классификация}{10}{}%
+\contentsline {subsection}{\numberline {2.2}Аугментация}{11}{}%
+\contentsline {section}{\numberline {3}Предлагаемый метод}{12}{}%
+\contentsline {subsection}{\numberline {3.1}Анализ недостатков существующих алгоритмов}{12}{}%
+\contentsline {subsection}{\numberline {3.2}Наш подход}{12}{}%
+\contentsline {subsection}{\numberline {3.3}Оценка качества}{12}{}%
+\contentsline {subsection}{\numberline {3.4}Дополнительные способы повышения качества}{12}{}%
+\contentsline {subsubsection}{\numberline {3.4.1}Аугментация}{12}{}%
+\contentsline {subsubsection}{\numberline {3.4.2}Уверенность классификатора}{12}{}%
+\contentsline {section}{\numberline {4}Вычислительный эксперимент}{13}{}%
+\contentsline {subsection}{\numberline {4.1}Экспериментальные данные}{13}{}%
+\contentsline {subsubsection}{\numberline {4.1.1}Наборы данных}{13}{}%
+\contentsline {subsection}{\numberline {4.2}Предобработка данных}{13}{}%
+\contentsline {subsubsection}{\numberline {4.2.1}Результаты}{13}{}%
+\contentsline {section}{\numberline {}Заключение}{14}{}%
+\contentsline {section}{\numberline {}Список литературы}{15}{}%

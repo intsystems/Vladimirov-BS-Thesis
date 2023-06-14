@@ -1952,7 +1952,6 @@ class S4Block(nn.Module):
         y = self.output_linear(y)
 
         if self.transposed: y = rearrange(y, 'b d ... -> b ... d')
-
         return y, state
 
     def setup_step(self, **kwargs):

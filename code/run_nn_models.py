@@ -2,16 +2,19 @@ import os
 import pickle
 import time
 from tqdm import tqdm
+import math
 
 import numpy as np
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
 
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
-from torch.utils.data.dataset import random_split
 
-from htnet import HTNet, HTNetWithRNN, HTNetWithNCDE, HTNetWithS4
+
+from htnet import *
 from utils import load_data, folds_choose_subjects, subject_data_inds, roi_proj_rf, \
     get_custom_motor_rois, proj_mats_good_rois, to_categorical
 
@@ -21,7 +24,9 @@ if os.environ.get("CUDA_VISIBLE_DEVICES") is None:
     os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-BATCH_SIZE = 20
+BATCH_SIZE = 64
+MAX_GRAD_NORM = 5
+L2_LAMBDA = 0
 
 
 def unroll_batch(batch, projectROIs):
@@ -61,28 +66,22 @@ def cnn_model(X_train, Y_train, X_validate, Y_validate, X_test, Y_test, chckpt_p
                       ROIs=nROIs, useHilbert=useHilbert, projectROIs=projectROIs, do_log=do_log,
                       compute_val=compute_val, data_srate=ecog_srate).to(DEVICE)
     elif modeltype == 'rnn':
-        model = HTNetWithRNN(nb_classes, Chans=X_train.shape[1], Samples=X_train.shape[-1],
-                      dropoutRate=dropoutRate, kernLength=kernLength, F1=F1, D=D, F2=F2,
-                      dropoutType=dropoutType, kernLength_sep=kernLength_sep,
-                      ROIs=nROIs, useHilbert=useHilbert, projectROIs=projectROIs, do_log=do_log,
-                      compute_val=compute_val, data_srate=ecog_srate, k_signals=X_train.shape[2]).to(DEVICE)
-    elif modeltype == 'ncde':
-        model = HTNetWithNCDE(nb_classes, Chans=X_train.shape[1], Samples=X_train.shape[-1],
-                      dropoutRate=dropoutRate, kernLength=kernLength, F1=F1, D=D, F2=F2,
-                      dropoutType=dropoutType, kernLength_sep=kernLength_sep,
-                      ROIs=nROIs, useHilbert=useHilbert, projectROIs=projectROIs, do_log=do_log,
-                      compute_val=compute_val, data_srate=ecog_srate, k_signals=X_train.shape[2]).to(DEVICE)
+        model = SeqRNN(nb_classes, dropoutRate=dropoutRate, k_signals=X_train.shape[2]).to(DEVICE)
     elif modeltype == 's4':
-        model = HTNetWithS4(nb_classes, Chans=X_train.shape[1], Samples=X_train.shape[-1],
-                              dropoutRate=dropoutRate, kernLength=kernLength, F1=F1, D=D, F2=F2,
-                              dropoutType=dropoutType, kernLength_sep=kernLength_sep,
-                              ROIs=nROIs, useHilbert=useHilbert, projectROIs=projectROIs, do_log=do_log,
-                              compute_val=compute_val, data_srate=ecog_srate, k_signals=X_train.shape[2]).to(DEVICE)
+        model = SeqS4(nb_classes, dropoutRate=dropoutRate, k_signals=X_train.shape[2]).to(DEVICE)
+    elif modeltype == 'ncde':
+        model = SeqNCDE(nb_classes, dropoutRate=dropoutRate, k_signals=X_train.shape[2],
+                        seq_len=X_train.shape[-1]).to(DEVICE)
     else:
         raise ValueError('Wrong modeltype!')
 
     # Set up optimizer, checkpointer, and early stopping during model fitting
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    print('Parameters =', sum(p.numel() for p in model.parameters() if p.requires_grad))
+    optimizer = optim.AdamW(model.parameters(), lr=0.002, weight_decay=0.002)
+
+    if modeltype == 'ncde':
+        optimizer = optim.AdamW(model.parameters(), lr=0.002, weight_decay=0.0)
+
     loss_func = nn.CrossEntropyLoss()
     # stop if val_loss doesn't improve after certain # of epochs
 
@@ -121,20 +120,23 @@ def cnn_model(X_train, Y_train, X_validate, Y_validate, X_test, Y_test, chckpt_p
 
     for epoch in range(epochs):
         model.train()
-        train_loss = 0.0
-        for batch in train_loader:
+        train_loss, train_acc = 0.0, 0.0
+        for i, batch in enumerate(train_loader):
             inputs, rois, labels = unroll_batch(batch, projectROIs)
 
             optimizer.zero_grad()
             outputs = model(inputs, rois)
             loss = loss_func(outputs, labels)
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), MAX_GRAD_NORM)
             optimizer.step()
 
             train_loss += loss.item()
+            preds = outputs.argmax(axis=-1)
+            train_acc += torch.mean((preds.detach().cpu() == labels.detach().cpu()).float())
 
         model.eval()
-        val_loss = 0.0
+        val_loss, val_acc = 0.0, 0.0
         with torch.no_grad():
             for batch in validate_loader:
                 inputs, rois, labels = unroll_batch(batch, projectROIs)
@@ -142,10 +144,14 @@ def cnn_model(X_train, Y_train, X_validate, Y_validate, X_test, Y_test, chckpt_p
                 outputs = model(inputs, rois)
                 loss = loss_func(outputs, labels)
                 val_loss += loss.item()
+                preds = outputs.argmax(axis=-1)
+                val_acc += torch.mean((preds.cpu() == labels.cpu()).float())
 
         train_loss /= len(train_loader)
         val_loss /= len(validate_loader)
-        print(f"Epoch {epoch + 1}/{epochs}, Train Loss: {train_loss}, Validation Loss: {val_loss}")
+        train_acc /= len(train_loader)
+        val_acc /= len(validate_loader)
+        print(f"Epoch {epoch + 1}/{epochs}, Train Loss: {train_loss}, Validation Loss: {val_loss}, Train Acc: {train_acc}, Validation Acc: {val_acc}")
 
         # Save the best model
         if val_loss < best_val_loss:
@@ -336,6 +342,34 @@ def run_nn_models(sp, n_folds, combined_sbjs, lp, roi_proj_loadpath,
                 X_test = X_test_orig[test_inds, ...]
                 Y_test = y_test_orig[test_inds]
                 sbj_order_test = sbj_order_test_load[test_inds]
+
+            if modeltype == 'rf':
+                # For random forest, project data from electrodes to ROIs in advance
+                X_train_proj = roi_proj_rf(X_train, sbj_order_train, nROIs, proj_mat_out)
+                X_validate_proj = roi_proj_rf(X_validate, sbj_order_validate, nROIs, proj_mat_out)
+                X_test_proj = roi_proj_rf(X_test, sbj_order_test, nROIs, proj_mat_out)
+
+                # Create Random Forest classifier model
+                model = RandomForestClassifier(n_estimators=n_estimators,
+                                               max_depth=max_depth,
+                                               class_weight="balanced",
+                                               random_state=rand_seed,
+                                               n_jobs=1,
+                                               oob_score=True)
+
+                # Fit model and store train/val/test accuracies
+                t_fit_start = time.time()
+                clf = model.fit(X_train_proj, Y_train.ravel())
+                last_epochs[i, 1] = time.time() - t_fit_start
+                accs[i, 0] = accuracy_score(Y_train.ravel(), clf.predict(X_train_proj))
+                accs[i, 1] = accuracy_score(Y_validate.ravel(), clf.predict(X_validate_proj))
+                accs[i, 2] = accuracy_score(Y_test.ravel(), clf.predict(X_test_proj))
+                del X_train_proj, X_validate_proj, X_test_proj
+
+                # Save model
+                chckpt_path = sp + modeltype + '_fold' + str(i) + save_suffix + '.sav'
+                pickle.dump(clf, open(chckpt_path, 'wb'))
+                continue
 
             # Reformat data size for NN fitting
             # Y_train = to_categorical(Y_train - 1)

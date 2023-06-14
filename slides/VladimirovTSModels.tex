@@ -117,7 +117,7 @@
 
 %----------------------------------------------------------------------------------------------------------
 
-\title[Заголовок]{Выбор моделей пространства состояний в задаче декодирования}
+\title[Заголовок]{Выбор моделей пространства состояний в задаче нейронного декодирования}
 \author{Владимиров Э.А.}
 
 \institute[]{Московский физико-технический институт}
@@ -131,9 +131,9 @@
 \end{frame}
 
 %----------------------------------------------------------------------------------------------------------
-\begin{frame}{Декодирование сигнала}
+\begin{frame}{Нейронное декодирование}
 	\begin{alertblock}{Проблема}
-		Декодирование многомерного сигнала в пространство с меньшей размерностью либо с некоторой структурой
+		Аггрегирование информации во времени
 	\end{alertblock}
 	
 	\begin{alertblock}{Задача}
@@ -164,11 +164,23 @@
 	\end{multicols}
 \end{frame}
 
-%---------------------------------------------------------------------------------------------------------
-\begin{frame}{История моделей}
-	\begin{figure}
-		\includegraphics[width=0.85\textwidth]{ts-models-history.pdf}
-	\end{figure}
+%--------------------------------------------------------------------------------------------------------
+%\begin{frame}{История моделей}
+%	\begin{figure}
+%		\includegraphics[width=0.85\textwidth]{ts-models-history.pdf}
+%	\end{figuree
+%\end{frame}
+
+\begin{frame}{Нейронное декодирование}
+	$\bX \in \dR^{M \times N \times T}$ ~--- $M$ измерений ЭКГ, где $N$ ~--- число электродов, $T$ ~--- число элементов временного ряда
+	
+	$Y \in \{ 0, 1\}^M$ ~--- целевая переменная
+	
+	Критерий качества ~--- бинарная кросс-энтропия  
+	
+	$$ L(\bw) = -\dfrac{1}{M} \sum\limits_{m=1}^M y_m \log(f(\bw, \bx)) + (1 - y_m) \log(1 - f(\bw, \bx))$$
+	
+	Оптимизационная задача: $\hat{\bw} = \underset{\bw}{\arg \max} L(\bw)$
 \end{frame}
 
 %---------------------------------------------------------------------------------------------------------
@@ -304,32 +316,54 @@
 	$M = \max(d, K, s)$  
 	
 	\begin{table}
-		\begin{tabular}{c|l|l|l|}
-			\cline{2-4}
-			\multicolumn{1}{l|}{}             & Parameters & Forward & Memory to train \\ \hline
-			\multicolumn{1}{|c|}{RNN}         & $O(KM)$ & $O(KML)$ & ??? \\ \hline
-			\multicolumn{1}{|c|}{Transformer} & $O(K^2d + Ks)$ & $O(LK \cdot (L+S))$ & ??? \\ \hline
-			\multicolumn{1}{|c|}{Neural CDE}  & $O(K^2d + Ks)$ & $O(K^2dL)$ & $O(L + K)$ \\ \hline
-			\multicolumn{1}{|c|}{S4}          & $O(Kd + Ks)$ & $O(KML)$ & ??? \\ \hline
+		\begin{tabular}{c|l|l|}
+			\cline{2-3}
+			\multicolumn{1}{l|}{}             & Parameters & Forward \\ \hline
+			\multicolumn{1}{|c|}{RNN}         & $O(KM)$ & $O(KML)$ \\ \hline
+			%\multicolumn{1}{|c|}{Transformer} & $O(K^2d + Ks)$ & $O(LK \cdot (L+S))$ \\ \hline
+			\multicolumn{1}{|c|}{Neural CDE}  & $O(K^2d + Ks)$ & $O(K^2dL)$ \\ \hline
+			\multicolumn{1}{|c|}{S4}          & $O(Kd + Ks)$ & $O(KML)$ \\ \hline
 		\end{tabular}
 	\end{table}
 \end{frame}
 %----------------------------------------------------------------------------------------------------------
 \begin{frame}{Вычислительный эксперимент}
 	\begin{alertblock}{Цель}
-		 На примере задачи классификации сигналов ЭЭГ сравнить работу различных моделей пространства состояний
+		 На примере задачи классификации сигналов ЭКГ сравнить работу различных моделей пространства состояний
 	\end{alertblock}
+
+	Основная модель ~--- HTNet
 	
+	\begin{figure}
+		\includegraphics[width=0.8\textwidth]{htnet.png}
+	\end{figure}
+
 \end{frame}
 
 %----------------------------------------------------------------------------------------------------------
 \begin{frame}{Анализ ошибки}
-	
+	\begin{figure}
+		\includegraphics[width=0.5\textwidth]{rnn-s4-ncde.png}
+	\end{figure}
+
+	\begin{table}
+		\begin{tabular}{c|l|l|l|}
+			\cline{2-4}
+			\multicolumn{1}{l|}{}  & Parameters & Time per epoch (sec) & Accuracy \\ \hline
+			\multicolumn{1}{|c|}{RNN} & 34.2k & 5.86 & 0.506 $\pm$ 0.027 \\ \hline
+			\multicolumn{1}{|c|}{S4} & 33.3k & 10.07 & 0.521 $\pm$ 0.049 \\ \hline
+			\multicolumn{1}{|c|}{Neural CDE} & 31.5k & 37.23 & 0.546 $\pm$ 0.026 \\ \hline
+		\end{tabular}
+	\end{table}
 \end{frame}
 
 %----------------------------------------------------------------------------------------------------------
 \begin{frame}{Заключение}
-	
+	\begin{enumerate}
+		\item[1] Показано, что рекуррентные нейронные сети, нейронные контролируемые уравнения и модель S4 являются частными случаями модели пространства состояний
+		
+		\item[2] Продемонстрировано, что NeuralCDE имеет лучшее качество на тестовой выборке по сравнению с другими моделями, однако её время обучения сильно превышает время обучения других моделей
+	\end{enumerate}
 \end{frame}
 
 \end{document} 

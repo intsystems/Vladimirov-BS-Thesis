@@ -17,13 +17,13 @@ ecog_lp = rootpath + 'ecog_data/' # data load path
 ecog_roi_proj_lp = rootpath + 'proj-matrices-ecog/'
 
 ### Same modality decoder params (across participants) ###
-n_folds_same = 1#36 # number of total folds
+n_folds_same = 10#36 # number of total folds
 spec_meas_same = ['power']
-hyps_same = {'F1' : 19, 'dropoutRate' : 0.342, 'kernLength' : 24,
+hyps_same = {'F1' : 19, 'dropoutRate' : 0.5, 'kernLength' : 24,
              'kernLength_sep' : 88, 'dropoutType' : 'Dropout',
              'D' : 2, 'n_estimators' : 240, 'max_depth' : 6}
 hyps_same['F2'] = hyps_same['F1'] * hyps_same['D'] # F2 = F1 * D
-epochs_same = 200
+epochs_same = 100
 patience_same = 10
 
 ### Fine-tune same modality decoders ###
@@ -61,7 +61,7 @@ for s,val in enumerate(spec_meas_same):
     if not os.path.exists(multi_sp):
         os.makedirs(multi_sp)
     combined_sbjs = True
-    models = ['s4']#['conv', 'rnn', 'ncde', 's4'] # avoid fitting non-HTNet models again
+    models = ['ncde'] # 's4', 'ncde' avoid fitting non-HTNet models again
     accuracy = run_nn_models(multi_sp, n_folds_same, combined_sbjs, ecog_lp, ecog_roi_proj_lp, test_day = 'last', do_log=do_log,
                   epochs=epochs_same, patience=patience_same, models=models, compute_val=compute_val,
                   F1 = hyps_same['F1'], dropoutRate = hyps_same['dropoutRate'], kernLength = hyps_same['kernLength'],
@@ -69,11 +69,11 @@ for s,val in enumerate(spec_meas_same):
                   D = hyps_same['D'], F2 = hyps_same['F2'], n_estimators = hyps_same['n_estimators'], max_depth = hyps_same['max_depth'])
     print(accuracy)
 
-try:
-    ntrain_combine_df(rootpath + dataset)
-    frac_combine_df(rootpath + dataset, ecog_roi_proj_lp)
-except BaseException:
-    pass
+# try:
+#     ntrain_combine_df(rootpath + dataset)
+#     frac_combine_df(rootpath + dataset, ecog_roi_proj_lp)
+# except BaseException:
+#     pass
 
 #### Pre-compute difference spectrograms for ECoG and EEG datasets ####
 #diff_specs(rootpath + dataset + '/combined_sbjs_power/', ecog_lp, ecog=True)
