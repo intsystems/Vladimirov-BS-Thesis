@@ -1,0 +1,50 @@
+This is BibTeX, Version 0.99d (TeX Live 2022/dev/Debian)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: VladimirovTSModels.aux
+The style file: unsrtnat.bst
+Database file #1: references.bib
+Warning--I didn't find a database entry for "scikit-learn"
+Warning--I didn't find a database entry for "PyRiemann"
+Warning--empty journal in kalman1961
+You've used 26 entries,
+            2481 wiz_defined-function locations,
+            719 strings with 9631 characters,
+and the built_in function-call counts, 10546 in all, are:
+= -- 871
+> -- 610
+< -- 11
++ -- 230
+- -- 178
+* -- 837
+:= -- 1693
+add.period$ -- 81
+call.type$ -- 26
+change.case$ -- 52
+chr.to.int$ -- 26
+cite$ -- 27
+duplicate$ -- 523
+empty$ -- 933
+format.name$ -- 216
+if$ -- 2235
+int.to.chr$ -- 1
+int.to.str$ -- 27
+missing$ -- 25
+newline$ -- 138
+num.names$ -- 78
+pop$ -- 221
+preamble$ -- 1
+purify$ -- 26
+quote$ -- 0
+skip$ -- 317
+stack$ -- 0
+substring$ -- 464
+swap$ -- 88
+text.length$ -- 4
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 179
+warning$ -- 1
+while$ -- 86
+width$ -- 0
+write$ -- 341
+(There were 3 warnings)

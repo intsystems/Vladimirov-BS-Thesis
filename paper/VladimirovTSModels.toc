@@ -1,0 +1,15 @@
+\babel@toc {russian}{}\relax 
+\contentsline {section}{\numberline {}Введение}{4}{section*.2}%
+\contentsline {section}{\numberline {}Обозначения}{5}{section*.3}%
+\contentsline {section}{\numberline {1}Постановка задачи}{6}{section.1}%
+\contentsline {section}{\numberline {2}Обзор существующих алгоритмов классификации}{7}{section.2}%
+\contentsline {section}{\numberline {3}Модели пространства состояний}{8}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Рекуррентные нейронные сети (RNN)}{9}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Нейронные контролируемые дифференциальные уравнения (NCDE)}{10}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Модель структурированного пространства состояний (S4)}{11}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Сравнение моделей}{12}{subsection.3.4}%
+\contentsline {section}{\numberline {4}Вычислительный эксперимент}{13}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Экспериментальные данные}{13}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Результаты}{13}{subsection.4.2}%
+\contentsline {section}{\numberline {}Заключение}{14}{section*.5}%
+\contentsline {section}{\numberline {}Список литературы}{15}{section*.5}%

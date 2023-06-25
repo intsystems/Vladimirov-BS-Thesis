@@ -1,0 +1,175 @@
+\begin{thebibliography}{26}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Ethier et~al.(2012)Ethier, Oby, Bauman, and
+  Miller]{temp_ethier2012restoration}
+Christian Ethier, Emily~R Oby, Matthew~J Bauman, and Lee~E Miller.
+\newblock Restoration of grasp following paralysis through brain-controlled
+  stimulation of muscles.
+\newblock \emph{Nature}, 485\penalty0 (7398):\penalty0 368--371, 2012.
+
+\bibitem[Ibos and Freedman(2017)]{temp_ibos2017sequential}
+Guilhem Ibos and David~J Freedman.
+\newblock Sequential sensory and decision processing in posterior parietal
+  cortex.
+\newblock \emph{Elife}, 6:\penalty0 e23743, 2017.
+
+\bibitem[Davidson et~al.(2009)Davidson, Kloosterman, and
+  Wilson]{temp_davidson2009hippocampal}
+Thomas~J Davidson, Fabian Kloosterman, and Matthew~A Wilson.
+\newblock Hippocampal replay of extended experience.
+\newblock \emph{Neuron}, 63\penalty0 (4):\penalty0 497--507, 2009.
+
+\bibitem[Leite et~al.(2018)Leite, Pereira, Gurjao, and
+  Veloso]{temp_leite2018deep}
+Niago Moreira~Nobre Leite, Eanes~Torres Pereira, Edmar~Candeia Gurjao, and
+  Luciana~Ribeiro Veloso.
+\newblock Deep convolutional autoencoder for eeg noise filtering.
+\newblock In \emph{2018 IEEE international conference on bioinformatics and
+  biomedicine (BIBM)}, pages 2605--2612. IEEE, 2018.
+
+\bibitem[Caldas et~al.(2020)Caldas, Pereira, Leite, Oliveira, and
+  Lucena]{temp_caldas2020towards}
+Arthur Sena~Lins Caldas, Eanes~Torres Pereira, Niago Moreira~Nobre Leite,
+  Arthur Dimitri~Brito Oliveira, and Ellen~Ribeiro Lucena.
+\newblock Towards automatic eeg signal denoising by quality metric
+  optimization.
+\newblock In \emph{2020 International Joint Conference on Neural Networks
+  (IJCNN)}, pages 1--7. IEEE, 2020.
+
+\bibitem[Paninski et~al.(2010)Paninski, Ahmadian, Ferreira, Koyama,
+  Rahnama~Rad, Vidne, Vogelstein, and Wu]{paninski2010new}
+Liam Paninski, Yashar Ahmadian, Daniel~Gil Ferreira, Shinsuke Koyama, Kamiar
+  Rahnama~Rad, Michael Vidne, Joshua Vogelstein, and Wei Wu.
+\newblock A new look at state-space models for neural data.
+\newblock \emph{Journal of computational neuroscience}, 29:\penalty0 107--126,
+  2010.
+
+\bibitem[An et~al.(2022)An, Lam, and Ling]{temp_an2022auto}
+Yang An, Hak~Keung Lam, and Sai~Ho Ling.
+\newblock Auto-denoising for eeg signals using generative adversarial network.
+\newblock \emph{Sensors}, 22\penalty0 (5):\penalty0 1750, 2022.
+
+\bibitem[Wu et~al.(2009)Wu, Kulkarni, Hatsopoulos, and Paninski]{wu2009neural}
+Wei Wu, Jayant~E Kulkarni, Nicholas~G Hatsopoulos, and Liam Paninski.
+\newblock Neural decoding of hand motion using a linear state-space model with
+  hidden states.
+\newblock \emph{IEEE Transactions on neural systems and rehabilitation
+  engineering}, 17\penalty0 (4):\penalty0 370--378, 2009.
+
+\bibitem[Kidger et~al.(2020)Kidger, Morrill, Foster, and Lyons]{ncde}
+Patrick Kidger, James Morrill, James Foster, and Terry Lyons.
+\newblock Neural controlled differential equations for irregular time series.
+\newblock \emph{Advances in Neural Information Processing Systems},
+  33:\penalty0 6696--6707, 2020.
+
+\bibitem[Gu et~al.(2021)Gu, Goel, and R{\'e}]{s4}
+Albert Gu, Karan Goel, and Christopher R{\'e}.
+\newblock Efficiently modeling long sequences with structured state spaces.
+\newblock \emph{arXiv preprint arXiv:2111.00396}, 2021.
+
+\bibitem[Kalman and Bucy(1961)]{kalman1961}
+Rudolph~E Kalman and Richard~S Bucy.
+\newblock New results in linear filtering and prediction theory.
+\newblock 1961.
+
+\bibitem[Harrison and Stevens(1976)]{harrison1976bayesian}
+P~Jeffrey Harrison and Colin~F Stevens.
+\newblock Bayesian forecasting.
+\newblock \emph{Journal of the Royal Statistical Society: Series B
+  (Methodological)}, 38\penalty0 (3):\penalty0 205--228, 1976.
+
+\bibitem[Harvey and Pierse(1984)]{harvey1984estimating}
+Andrew~C Harvey and Richard~G Pierse.
+\newblock Estimating missing observations in economic time series.
+\newblock \emph{Journal of the American statistical Association}, 79\penalty0
+  (385):\penalty0 125--131, 1984.
+
+\bibitem[Harvey and Todd(1983)]{harvey1983forecasting}
+Andrew~C Harvey and Paul~HJ Todd.
+\newblock Forecasting economic time series with structural and box-jenkins
+  models: A case study.
+\newblock \emph{Journal of Business \& Economic Statistics}, 1\penalty0
+  (4):\penalty0 299--307, 1983.
+
+\bibitem[Durbin and Koopman(2002)]{durbin2002simple}
+James Durbin and Siem~Jan Koopman.
+\newblock A simple and efficient simulation smoother for state space time
+  series analysis.
+\newblock \emph{Biometrika}, 89\penalty0 (3):\penalty0 603--616, 2002.
+
+\bibitem[Douc et~al.(2014)Douc, Moulines, and Stoffer]{douc2014nonlinear}
+Randal Douc, Eric Moulines, and David Stoffer.
+\newblock \emph{Nonlinear time series: Theory, methods and applications with R
+  examples}.
+\newblock CRC press, 2014.
+
+\bibitem[He et~al.(2016)He, Zhang, Ren, and Sun]{temp_he2016deep}
+Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun.
+\newblock Deep residual learning for image recognition.
+\newblock In \emph{Proceedings of the IEEE conference on computer vision and
+  pattern recognition}, pages 770--778, 2016.
+
+\bibitem[Rumelhart et~al.(1985)Rumelhart, Hinton, and Williams]{rnn}
+David~E Rumelhart, Geoffrey~E Hinton, and Ronald~J Williams.
+\newblock Learning internal representations by error propagation.
+\newblock Technical report, California Univ San Diego La Jolla Inst for
+  Cognitive Science, 1985.
+
+\bibitem[Greff et~al.(2016)Greff, Srivastava, Koutn{\'\i}k, Steunebrink, and
+  Schmidhuber]{lstm}
+Klaus Greff, Rupesh~K Srivastava, Jan Koutn{\'\i}k, Bas~R Steunebrink, and
+  J{\"u}rgen Schmidhuber.
+\newblock Lstm: A search space odyssey.
+\newblock \emph{IEEE transactions on neural networks and learning systems},
+  28\penalty0 (10):\penalty0 2222--2232, 2016.
+
+\bibitem[Chung et~al.(2014)Chung, Gulcehre, Cho, and Bengio]{lstm-and-gru}
+Junyoung Chung, Caglar Gulcehre, KyungHyun Cho, and Yoshua Bengio.
+\newblock Empirical evaluation of gated recurrent neural networks on sequence
+  modeling.
+\newblock \emph{arXiv preprint arXiv:1412.3555}, 2014.
+
+\bibitem[Graves et~al.(2005)Graves, Fern{\'a}ndez, and
+  Schmidhuber]{bidirectional-rnn}
+Alex Graves, Santiago Fern{\'a}ndez, and J{\"u}rgen Schmidhuber.
+\newblock Bidirectional lstm networks for improved phoneme classification and
+  recognition.
+\newblock In \emph{Artificial Neural Networks: Formal Models and Their
+  Applications--ICANN 2005: 15th International Conference, Warsaw, Poland,
+  September 11-15, 2005. Proceedings, Part II 15}, pages 799--804. Springer,
+  2005.
+
+\bibitem[Chen et~al.(2018)Chen, Rubanova, Bettencourt, and Duvenaud]{node}
+Ricky~TQ Chen, Yulia Rubanova, Jesse Bettencourt, and David~K Duvenaud.
+\newblock Neural ordinary differential equations.
+\newblock \emph{Advances in neural information processing systems}, 31, 2018.
+
+\bibitem[Rubanova et~al.(2019)Rubanova, Chen, and Duvenaud]{latent-ode}
+Yulia Rubanova, Ricky~TQ Chen, and David~K Duvenaud.
+\newblock Latent ordinary differential equations for irregularly-sampled time
+  series.
+\newblock \emph{Advances in neural information processing systems}, 32, 2019.
+
+\bibitem[Morrill et~al.(2021)Morrill, Kidger, Yang, and Lyons]{ncde-online}
+James Morrill, Patrick Kidger, Lingyi Yang, and Terry Lyons.
+\newblock Neural controlled differential equations for online prediction tasks.
+\newblock \emph{arXiv preprint arXiv:2106.11028}, 2021.
+
+\bibitem[HazyResearch(2021)]{s4-git}
+HazyResearch.
+\newblock state-spaces.
+\newblock \url{https://github.com/HazyResearch/state-spaces}, 2021.
+
+\bibitem[Peterson et~al.(2021)Peterson, Singh, Wang, Rao, and
+  Brunton]{peterson2021behavioral}
+Steven~M Peterson, Satpreet~H Singh, Nancy~XR Wang, Rajesh~PN Rao, and Bingni~W
+  Brunton.
+\newblock Behavioral and neural variability of naturalistic arm movements.
+\newblock \emph{Eneuro}, 8\penalty0 (3), 2021.
+
+\end{thebibliography}
