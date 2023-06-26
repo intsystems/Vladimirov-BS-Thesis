@@ -1,4 +1,4 @@
-\begin{thebibliography}{26}
+\begin{thebibliography}{36}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -24,6 +24,14 @@ Thomas~J Davidson, Fabian Kloosterman, and Matthew~A Wilson.
 \newblock Hippocampal replay of extended experience.
 \newblock \emph{Neuron}, 63\penalty0 (4):\penalty0 497--507, 2009.
 
+\bibitem[Firuzi et~al.(2022)Firuzi, Ahmadyani, Abdi, Naderi, Hassan, and
+  Bokani]{firuzi2022decoding}
+Rezwan Firuzi, Hamed Ahmadyani, Mohammad~Foad Abdi, Dana Naderi, Jahan Hassan,
+  and Ayub Bokani.
+\newblock Decoding neural signals with computational models: A systematic
+  review of invasive bmi.
+\newblock \emph{arXiv preprint arXiv:2211.03324}, 2022.
+
 \bibitem[Leite et~al.(2018)Leite, Pereira, Gurjao, and
   Veloso]{temp_leite2018deep}
 Niago Moreira~Nobre Leite, Eanes~Torres Pereira, Edmar~Candeia Gurjao, and
@@ -41,6 +49,47 @@ Arthur Sena~Lins Caldas, Eanes~Torres Pereira, Niago Moreira~Nobre Leite,
 \newblock In \emph{2020 International Joint Conference on Neural Networks
   (IJCNN)}, pages 1--7. IEEE, 2020.
 
+\bibitem[An et~al.(2022)An, Lam, and Ling]{temp_an2022auto}
+Yang An, Hak~Keung Lam, and Sai~Ho Ling.
+\newblock Auto-denoising for eeg signals using generative adversarial network.
+\newblock \emph{Sensors}, 22\penalty0 (5):\penalty0 1750, 2022.
+
+\bibitem[Lawhern et~al.(2018)Lawhern, Solon, Waytowich, Gordon, Hung, and
+  Lance]{eegnet}
+Vernon~J Lawhern, Amelia~J Solon, Nicholas~R Waytowich, Stephen~M Gordon,
+  Chou~P Hung, and Brent~J Lance.
+\newblock Eegnet: a compact convolutional neural network for eeg-based
+  brain--computer interfaces.
+\newblock \emph{Journal of neural engineering}, 15\penalty0 (5):\penalty0
+  056013, 2018.
+
+\bibitem[Peterson et~al.(2021{\natexlab{a}})Peterson, Steine-Hanson, Davis,
+  Rao, and Brunton]{htnet}
+Steven~M Peterson, Zoe Steine-Hanson, Nathan Davis, Rajesh~PN Rao, and Bingni~W
+  Brunton.
+\newblock Generalized neural decoders for transfer learning across participants
+  and recording modalities.
+\newblock \emph{Journal of Neural Engineering}, 18\penalty0 (2):\penalty0
+  026014, 2021{\natexlab{a}}.
+
+\bibitem[D{\'e}fossez et~al.(2022)D{\'e}fossez, Caucheteux, Rapin, Kabeli, and
+  King]{defossez2022decoding}
+Alexandre D{\'e}fossez, Charlotte Caucheteux, J{\'e}r{\'e}my Rapin, Ori Kabeli,
+  and Jean-R{\'e}mi King.
+\newblock Decoding speech from non-invasive brain recordings.
+\newblock \emph{arXiv preprint arXiv:2208.12266}, 2022.
+
+\bibitem[Tang et~al.(2023)Tang, LeBel, Jain, and Huth]{tang2023semantic}
+Jerry Tang, Amanda LeBel, Shailee Jain, and Alexander~G Huth.
+\newblock Semantic reconstruction of continuous language from non-invasive
+  brain recordings.
+\newblock \emph{Nature Neuroscience}, pages 1--9, 2023.
+
+\bibitem[Kalman and Bucy(1961)]{kalman1961}
+Rudolph~E Kalman and Richard~S Bucy.
+\newblock New results in linear filtering and prediction theory.
+\newblock 1961.
+
 \bibitem[Paninski et~al.(2010)Paninski, Ahmadian, Ferreira, Koyama,
   Rahnama~Rad, Vidne, Vogelstein, and Wu]{paninski2010new}
 Liam Paninski, Yashar Ahmadian, Daniel~Gil Ferreira, Shinsuke Koyama, Kamiar
@@ -49,17 +98,18 @@ Liam Paninski, Yashar Ahmadian, Daniel~Gil Ferreira, Shinsuke Koyama, Kamiar
 \newblock \emph{Journal of computational neuroscience}, 29:\penalty0 107--126,
   2010.
 
-\bibitem[An et~al.(2022)An, Lam, and Ling]{temp_an2022auto}
-Yang An, Hak~Keung Lam, and Sai~Ho Ling.
-\newblock Auto-denoising for eeg signals using generative adversarial network.
-\newblock \emph{Sensors}, 22\penalty0 (5):\penalty0 1750, 2022.
-
 \bibitem[Wu et~al.(2009)Wu, Kulkarni, Hatsopoulos, and Paninski]{wu2009neural}
 Wei Wu, Jayant~E Kulkarni, Nicholas~G Hatsopoulos, and Liam Paninski.
 \newblock Neural decoding of hand motion using a linear state-space model with
   hidden states.
 \newblock \emph{IEEE Transactions on neural systems and rehabilitation
   engineering}, 17\penalty0 (4):\penalty0 370--378, 2009.
+
+\bibitem[Rumelhart et~al.(1985)Rumelhart, Hinton, and Williams]{rnn}
+David~E Rumelhart, Geoffrey~E Hinton, and Ronald~J Williams.
+\newblock Learning internal representations by error propagation.
+\newblock Technical report, California Univ San Diego La Jolla Inst for
+  Cognitive Science, 1985.
 
 \bibitem[Kidger et~al.(2020)Kidger, Morrill, Foster, and Lyons]{ncde}
 Patrick Kidger, James Morrill, James Foster, and Terry Lyons.
@@ -72,10 +122,30 @@ Albert Gu, Karan Goel, and Christopher R{\'e}.
 \newblock Efficiently modeling long sequences with structured state spaces.
 \newblock \emph{arXiv preprint arXiv:2111.00396}, 2021.
 
-\bibitem[Kalman and Bucy(1961)]{kalman1961}
-Rudolph~E Kalman and Richard~S Bucy.
-\newblock New results in linear filtering and prediction theory.
-\newblock 1961.
+\bibitem[Xie et~al.(2018)Xie, Schwartz, and Prasad]{xie2018decoding}
+Ziqian Xie, Odelia Schwartz, and Abhishek Prasad.
+\newblock Decoding of finger trajectory from ecog using deep learning.
+\newblock \emph{Journal of neural engineering}, 15\penalty0 (3):\penalty0
+  036009, 2018.
+
+\bibitem[Wang et~al.(2018)Wang, Farhadi, Rao, and Brunton]{wang2018ajile}
+Nancy Wang, Ali Farhadi, Rajesh Rao, and Bingni Brunton.
+\newblock Ajile movement prediction: Multimodal deep learning for natural human
+  neural recordings and video.
+\newblock In \emph{Proceedings of the AAAI Conference on Artificial
+  Intelligence}, volume~32, 2018.
+
+\bibitem[Du et~al.(2018)Du, Yang, Liu, and Huang]{du2018decoding}
+Anming Du, Shuqin Yang, Weijia Liu, and Haiping Huang.
+\newblock Decoding ecog signal with deep learning model based on lstm.
+\newblock In \emph{TENCON 2018-2018 IEEE Region 10 Conference}, pages
+  0430--0435. IEEE, 2018.
+
+\bibitem[Volkova et~al.(2019)Volkova, Lebedev, Kaplan, and
+  Ossadtchi]{volkova2019decoding}
+Ksenia Volkova, Mikhail~A Lebedev, Alexander Kaplan, and Alexei Ossadtchi.
+\newblock Decoding movement from electrocorticographic activity: a review.
+\newblock \emph{Frontiers in neuroinformatics}, 13:\penalty0 74, 2019.
 
 \bibitem[Harrison and Stevens(1976)]{harrison1976bayesian}
 P~Jeffrey Harrison and Colin~F Stevens.
@@ -114,12 +184,6 @@ Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun.
 \newblock In \emph{Proceedings of the IEEE conference on computer vision and
   pattern recognition}, pages 770--778, 2016.
 
-\bibitem[Rumelhart et~al.(1985)Rumelhart, Hinton, and Williams]{rnn}
-David~E Rumelhart, Geoffrey~E Hinton, and Ronald~J Williams.
-\newblock Learning internal representations by error propagation.
-\newblock Technical report, California Univ San Diego La Jolla Inst for
-  Cognitive Science, 1985.
-
 \bibitem[Greff et~al.(2016)Greff, Srivastava, Koutn{\'\i}k, Steunebrink, and
   Schmidhuber]{lstm}
 Klaus Greff, Rupesh~K Srivastava, Jan Koutn{\'\i}k, Bas~R Steunebrink, and
@@ -144,6 +208,13 @@ Alex Graves, Santiago Fern{\'a}ndez, and J{\"u}rgen Schmidhuber.
   September 11-15, 2005. Proceedings, Part II 15}, pages 799--804. Springer,
   2005.
 
+\bibitem[Glaser et~al.(2020)Glaser, Benjamin, Chowdhury, Perich, Miller, and
+  Kording]{glaser2020machine}
+Joshua~I Glaser, Ari~S Benjamin, Raeed~H Chowdhury, Matthew~G Perich, Lee~E
+  Miller, and Konrad~P Kording.
+\newblock Machine learning for neural decoding.
+\newblock \emph{Eneuro}, 7\penalty0 (4), 2020.
+
 \bibitem[Chen et~al.(2018)Chen, Rubanova, Bettencourt, and Duvenaud]{node}
 Ricky~TQ Chen, Yulia Rubanova, Jesse Bettencourt, and David~K Duvenaud.
 \newblock Neural ordinary differential equations.
@@ -165,11 +236,11 @@ HazyResearch.
 \newblock state-spaces.
 \newblock \url{https://github.com/HazyResearch/state-spaces}, 2021.
 
-\bibitem[Peterson et~al.(2021)Peterson, Singh, Wang, Rao, and
+\bibitem[Peterson et~al.(2021{\natexlab{b}})Peterson, Singh, Wang, Rao, and
   Brunton]{peterson2021behavioral}
 Steven~M Peterson, Satpreet~H Singh, Nancy~XR Wang, Rajesh~PN Rao, and Bingni~W
   Brunton.
 \newblock Behavioral and neural variability of naturalistic arm movements.
-\newblock \emph{Eneuro}, 8\penalty0 (3), 2021.
+\newblock \emph{Eneuro}, 8\penalty0 (3), 2021{\natexlab{b}}.
 
 \end{thebibliography}

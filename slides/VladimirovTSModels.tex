@@ -23,7 +23,7 @@
 \usepackage{enumerate}
 \usepackage{mathtools}
 \usepackage{comment}
-\usepackage{multicol}
+\usepackage{tabularx, tabulary, multicol}
 \usepackage[all]{xy}
 
 \newcommand{\bz}{\mathbf{z}}
@@ -83,6 +83,17 @@
 % command to strike out text
 \newcommand{\stkout}[1]{\ifmmode\text{\sout{\ensuremath{#1}}}\else\sout{#1}\fi}
 
+% limited alertblock
+\newenvironment<>{varblock}[2][.9\textwidth]{%
+	\setlength{\textwidth}{#1}
+	\begin{actionenv}#3%
+		\def\insertblocktitle{#2}%
+		\par%
+		\usebeamertemplate{block begin}}
+	{\par%
+		\usebeamertemplate{block end}%
+	\end{actionenv}}
+
 \renewcommand{\epsilon}{\ensuremath{\varepsilon}}
 \renewcommand{\phi}{\ensuremath{\varphi}}
 \renewcommand{\kappa}{\ensuremath{\varkappa}}
@@ -122,8 +133,7 @@
 
 \institute[]{Московский физико-технический институт}
 \date{\footnotesize
-	\par\smallskip\emph{Эксперт:} В.\,В.~Стрижов
-	\par\smallskip\emph{Консультант:} А.\,М.~Самохина
+	\par\smallskip\emph{Научный руководитель:} д.~ф.-м.~н. В.\,В.~Стрижов
 	\par\bigskip\small 2023}
 
 %---------------------------------------------------------------------------------------------------------
@@ -134,9 +144,9 @@
 \end{frame}
 
 %----------------------------------------------------------------------------------------------------------
-\begin{frame}{Нейронное декодирование}
+\begin{frame}{Модели глубокого обучения в задаче нейронного декодирования}
 	\begin{alertblock}{Проблема}
-		Агрегирование информации во времени
+		Моделирование и распознание динамики нейронных систем
 	\end{alertblock}
 	
 	\begin{alertblock}{Задача}
@@ -149,33 +159,36 @@
 \end{frame}
 
 %---------------------------------------------------------------------------------------------------------
-\begin{frame}{Модель пространства состояний}
+\begin{frame}{Модель пространства состояний (SSM)}
 	\begin{multicols}{2}
+		\includegraphics[width=0.45\textwidth]{3rd-slide-2.pdf}
+		
 		\begin{gather*}
 			\text{Непрерывная модель пр-ва состояний} \\
 			x'(t) = Ax(t) + Bu(t) \\
-			y(t) = Cx(t) + \stkout{Du(t)} \\ \\
+			y(t) = Cx(t) + \stkout{Du(t)} \\
 			\text{Дискретная модель пр-ва состояний} \\
 			x_k = Ax_{k-1} + Bu_k \\
 			y_k = Cx_k + \stkout{Du_k}
 		\end{gather*}
 	
-		\begin{gather*}
-		\end{gather*}
+		\begin{table}[bhtp]
+			\begin{tabular}{|l|l|l|}
+				\hline
+				\multicolumn{1}{|c|}{SSM} & \multicolumn{1}{c|}{CNN} & \multicolumn{1}{c|}{Transformer} \\ \hline
+				LSTM & EEGNet & GPT \\
+				??? & HTNet & Wav2Vec \\
+				\hline
+			\end{tabular}
+		\end{table}
 	
-		\includegraphics[width=0.45\textwidth]{3rd-slide.pdf}
 	\end{multicols}
 \end{frame}
 
 %--------------------------------------------------------------------------------------------------------
-%\begin{frame}{История моделей}
-%	\begin{figure}
-%		\includegraphics[width=0.85\textwidth]{ts-models-history.pdf}
-%	\end{figuree
-%\end{frame}
 
-\begin{frame}{Нейронное декодирование}
-	$\bX \in \dR^{M \times N \times T}$ ~--- $M$ измерений ЭКГ, где $N$ ~--- число электродов, $T$ ~--- число элементов временного ряда
+\begin{frame}{Постановка задачи классификации сигнала ЭКоГ}
+	$\bX \in \dR^{M \times N \times T}$ ~--- $M$ измерений ЭКоГ, где $N$ ~--- число электродов, $T$ ~--- число элементов временного ряда
 	
 	$Y \in \{ 0, 1\}^M$ ~--- целевая переменная
 	
@@ -187,7 +200,7 @@
 \end{frame}
 
 %---------------------------------------------------------------------------------------------------------
-\begin{frame}{Рекуррентные нейронные сети}
+\begin{frame}{Рекуррентные нейронные сети (RNN)}
 	\begin{multicols}{2}
 		\begin{figure}
 			\includegraphics[width=0.5\textwidth]{rnn.jpg}
@@ -208,31 +221,25 @@
 		$W_x \in \dR^{K \times K}, W_u \in \dR^{s \times K}, W_y \in \dR^{K \times d}$ ~--- матрицы весов
 	\end{multicols}
 	\bigskip
-	\footnotetext[1]{\textit{Medsker L. R., Jain L. C.} Recurrent neural networks //Design and Applications. – 2001. – Т. 5. – С. 64-67.}
+	\footnotetext[1]{\textit{Rumelhart, David E and Hinton, Geoffrey E and Williams, Ronald J} Learning internal representations by error propagation //California Univ San Diego La Jolla Inst for Cognitive Science – 1985}
 \end{frame}
 %----------------------------------------------------------------------------------------------------------
-\begin{frame}{Сравнение РНС с моделью пространства состояний}
-	\begin{multicols}{2}
-		\mbox{\Large\(
-			\begin{aligned}
-				&\text{\normalsize{Модель пространства состояний}} \\
-				&\bx_t = A\bx_{t-1} + B\bu_t \\
-				&\by_t = C\bx_{t}
-			\end{aligned}
-		\)}
-
-		\mbox{\Large\(
-			\begin{aligned}
-				&\text{\normalsize{Рекуррентная нейронная сеть}} \\
-				&\bx_t = \sigma(W_x \bx_{t-1} + W_u \bu_t) \\
-				&\by_t = W_y \bx_t
-			\end{aligned}
-		\)}
-	\end{multicols}
+\begin{frame}{Свойства модели RNN}
+	Количество параметров = $K^2 + Ks + Kd = O(KM)$
+	
+	Время прямого прохода = $O(KML)$, где $M = \max(d, K, s)$
+	
+	\begin{table}[bhtp]
+		\begin{tabularx}{0.95\textwidth}{|X|X|}
+			\hline
+			Преимущества & Недостатки \\ \hline
+				есть реализация во всех фреймворках глубокого обучения & не работают с данными, содержащими пропуски и/или разной частотой сэмплирования \\ относительно быстрое обучение и предсказание модели & \\ \hline
+		\end{tabularx}
+	\end{table}
 \end{frame}
 
 %----------------------------------------------------------------------------------------------------------
-\begin{frame}{Нейронные контролируемые дифференциальные уравнения}
+\begin{frame}{Нейронные контролируемые дифференциальные уравнения (NCDE/Neural CDE)}
 	\begin{multicols}{2}
 		\begin{figure}
 			\includegraphics[width=0.5\textwidth]{neural-cde-path.jpg}
@@ -260,50 +267,51 @@
 \end{frame}
 
 %----------------------------------------------------------------------------------------------------------
-\begin{frame}{Сравнение НКДУ с моделью пространства состояний}
-	\begin{multicols}{2}
-		\mbox{\Large\(
-			\begin{aligned}
-				&\text{\normalsize{Модель пространства состояний}} \\
-				&\bx(t_1) = Const \\
-				&\bx'(t) = A\bx(t) + B\bu(t) \\
-				&\by(t) = C\bx(t)
-			\end{aligned}
-		\)}
-		
-		\mbox{\Large\(
-			\begin{aligned}
-				&\text{\normalsize{Нейронные КДУ}} \\
-				&\bx(t_1) = A\bu(t_1) + f(t_1) \\
-				&\bx'(t) = BU'(t) \cdot \bx(t) \\
-				&\by(t) = C \bx(t)
-			\end{aligned}
-		\)}
-	\end{multicols}
+\begin{frame}{Свойства модели NCDE}
+	Количество параметров = $O(K^2d + Ks)$
+	
+	Время прямого прохода = $O(K^2dL)$
+	
+	\begin{table}[bhtp]
+		\begin{tabularx}{0.95\textwidth}{|X|X|}
+			\hline
+			Преимущества & Недостатки \\ \hline
+			большая гибкость в настройке модели: выбор архитектуры функции $\bff(\bx)$ и пути $U(t)$ & в десятки раз медленнее, чем RNN \\ 
+			работает с данными, в которых содержатся пропуски и которые имеют разную частоту сэмплирования &  на текущий момент не существует эффективной реализации \\
+			 & долгая настройка модели \\ & \\
+			 & нестабильное обучение при больших $K$, при использовании солверов с адаптивным шагом и функции активации ReLU \\
+			\hline
+		\end{tabularx}
+	\end{table}
+	
 	\bigskip
 	\footnotetext[1]{\textit{Kidger P. et al.} Neural controlled differential equations for irregular time series //Advances in Neural Information Processing Systems. – 2020. – Т. 33. – С. 6696-6707}
 \end{frame}
 
 %----------------------------------------------------------------------------------------------------------
-\begin{frame}{Модели структурированного пространства состояний}
-	\begin{figure}
-		\includegraphics[width=0.9\textwidth]{s4-diagram.pdf}
+\begin{frame}{Модели структурированного пространства состояний (S4)}
+	\begin{figure}[bhtp]
+		\includegraphics[width=\textwidth]{s4-schema.png}
+		\label{fig:s4}
 	\end{figure}
+\end{frame}
 
-	\begin{multicols}{2}
-		\begin{align*}
-			&u_k = u(k\Delta) \\
-			&\overline{A} = (I - \dfrac{\Delta}{2} A)^{-1} (I + \dfrac{\Delta}{2} A) \\
-			&\overline{B} = (I - \dfrac{\Delta}{2} A)^{-1} \Delta B
-		\end{align*}
+\begin{frame}{Свойства модели S4}
+	Количество параметров = $Kd + Ks$
 	
-		\begin{align*}
-			&A = \Lambda - PQ^* \text{~--- диаг. + ранг 1}\\
-			&A_0 = \dfrac{2}{\Delta} I + A \\
-			&D = (\dfrac{2}{\Delta} - \Lambda)^{-1} \\
-			&A_1 = D - DP(1 + Q^*DP)^{-1}Q^*D
-		\end{align*}
-	\end{multicols}
+	Время прямого прохода = $O(KML)$
+	
+	\begin{table}[bhtp]
+		\begin{tabularx}{0.95\textwidth}{|X|X|}
+			\hline
+			Преимущества & Недостатки \\ \hline
+			хорошо работает с данными, содержащими долговременные зависимости & в несколько раз медленнее, чем RNN \\ 
+			существует эффективная реализация & не работают с данными, содержащими пропуски и/или разной частотой сэмплирования \\
+			\hline
+		\end{tabularx}
+	\end{table}
+	
+	\bigskip
 	\footnotetext[1]{\textit{Gu, Albert, Karan Goel, and Christopher Ré} Efficiently modeling long sequences with structured state spaces //arXiv preprint arXiv:2111.00396. – 2021}
 \end{frame}
 %----------------------------------------------------------------------------------------------------------
@@ -312,39 +320,53 @@
 	
 	$d$ ~--- размерность исходного пространства
 	
-	$K$ ~--- размерность скрытого пространства
+	$K$ ~--- размерность скрытого пространства (в случае с CNN ~--- размер ядра)
 	
 	$s$ ~--- размерность целевого пространства
 	
+	$N$ ~--- количество датчиков ЭКоГ
+	
 	$M = \max(d, K, s)$  
 	
-	\begin{table}
-		\begin{tabular}{c|l|l|}
-			\cline{2-3}
-			\multicolumn{1}{l|}{}             & Parameters & Forward \\ \hline
-			\multicolumn{1}{|c|}{RNN}         & $O(KM)$ & $O(KML)$ \\ \hline
-			%\multicolumn{1}{|c|}{Transformer} & $O(K^2d + Ks)$ & $O(LK \cdot (L+S))$ \\ \hline
-			\multicolumn{1}{|c|}{Neural CDE}  & $O(K^2d + Ks)$ & $O(K^2dL)$ \\ \hline
-			\multicolumn{1}{|c|}{S4}          & $O(Kd + Ks)$ & $O(KML)$ \\ \hline
-		\end{tabular}
+	\begin{table}[bhtp]
+		\centering
+		\caption{Сравнение моделей по числу обучаемых параметров, времени прямого прохода, наличию эффективной реализации, возможности работы с пропусками и хранения всей истории}
+		\begin{tabularx}{0.99\textwidth}{c|c|c|X|X|X|}
+			\cline{2-6}
+			\multicolumn{1}{l|}{}             & Parameters & Forward & Fast impl. & Cont. time & Unb. context \\ \hline
+			\multicolumn{1}{|c|}{RNN}         & $O(KM)$ & $O(KML)$ & $+$ & $-$ & $+$ \\ \hline
+			\multicolumn{1}{|c|}{NCDE}  & $O(K^2d + Ks)$ & $O(K^2dL)$ & $-$ & $+$ & $+$ \\ \hline
+			\multicolumn{1}{|c|}{S4}          & $O(Kd + Ks)$ & $O(KML)$ & $+$ & $-$ & $+$ \\ \hline
+			\multicolumn{1}{|c|}{Transformer} & $O(K^2d + Ks)$ & $O(LK \cdot (L+s))$ & $+$ & $-$ & $+$ \\ \hline
+			\multicolumn{1}{|c|}{CNN} & $O(K^2)$ & $O(K^2(L-K)(N-K))$ & $+$ & $-$ & $-$ \\ \hline
+		\end{tabularx}
 	\end{table}
 \end{frame}
 %----------------------------------------------------------------------------------------------------------
-\begin{frame}{Вычислительный эксперимент}
-	\begin{alertblock}{Цель}
-		 На примере задачи классификации сигналов ЭКГ сравнить работу различных моделей пространства состояний
-	\end{alertblock}
-
-	Основная модель ~--- HTNet
+\begin{frame}{Вычислительный эксперимент на данных ЭКоГ}
+	\begin{varblock}{Цель}
+		 На примере задачи классификации сигналов ЭКоГ сравнить работу различных моделей пространства состояний
+	\end{varblock}
 	
-	\begin{figure}
-		\includegraphics[width=0.8\textwidth]{htnet.png}
-	\end{figure}
-
+	\begin{multicols}{2}
+		\begin{figure}
+			\includegraphics[height=0.65\textheight]{seq-model.jpg}
+		\end{figure}
+	
+		\begin{varblock}[6cm]{Данные}
+			ЭКоГ-записи были получены от 12 участников
+			в ходе клинического мониторинга эпилепсии. Эти записи длятся 7 $\pm$ 2 дня на каждого участника. ЭКоГ сигнал измерялся 126 каналами с частотой 250 Гц. Один сэмпл соответствует 2 секундам записи сигнала, во время которых участник двигал или не двигал рукой.
+		\end{varblock}
+	
+		Train/Val/Test = 7/4/1
+		
+		Количество разбиений = 20
+		
+	\end{multicols}
 \end{frame}
 
 %----------------------------------------------------------------------------------------------------------
-\begin{frame}{Анализ ошибки}
+\begin{frame}{Анализ ошибки моделей декодирования}
 	\begin{figure}
 		\includegraphics[width=0.5\textwidth]{rnn-s4-ncde.png}
 	\end{figure}
@@ -361,11 +383,15 @@
 \end{frame}
 
 %----------------------------------------------------------------------------------------------------------
-\begin{frame}{Заключение}
+\begin{frame}{Выносится на защиту}
 	\begin{enumerate}
-		\item[1] Показано, что рекуррентные нейронные сети, нейронные контролируемые уравнения и модель S4 являются частными случаями модели пространства состояний
+		\item Рассмотрено применение моделей пространства состояний в задаче классификации сигналов ЭКоГ
 		
-		\item[2] Продемонстрировано, что NeuralCDE имеет лучшее качество на тестовой выборке по сравнению с другими моделями, однако её время обучения сильно превышает время обучения других моделей
+		\item Изучены свойства следующих моделей пространства состояний: RNN, NCDE, S4
+		
+		\item Предоставлена рекомендация по выбору моделей пространства состояния
+		
+		\item Продемонстрировано, что модель Neural CDE имеет лучшее качество на тестовой выборке по сравнению с другими моделями, однако её время обучения сильно превышает время обучения других моделей
 	\end{enumerate}
 \end{frame}
 

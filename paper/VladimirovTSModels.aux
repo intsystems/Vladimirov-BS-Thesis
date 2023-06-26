@@ -23,79 +23,112 @@
 \citation{temp_ethier2012restoration}
 \citation{temp_ibos2017sequential}
 \citation{temp_davidson2009hippocampal}
+\citation{firuzi2022decoding}
 \citation{temp_leite2018deep,temp_caldas2020towards}
-\citation{paninski2010new}
 \citation{temp_an2022auto}
+\citation{eegnet,htnet}
+\citation{defossez2022decoding,tang2023semantic}
+\citation{kalman1961}
 \citation{paninski2010new}
 \citation{wu2009neural}
+\citation{rnn}
 \citation{ncde}
 \citation{s4}
-\@writefile{toc}{\contentsline {section}{\numberline {}Введение}{4}{section*.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {}Обозначения}{5}{section*.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {1}Постановка задачи}{6}{section.1}\protected@file@percent }
-\citation{scikit-learn}
-\citation{scikit-learn}
-\citation{scikit-learn}
-\citation{PyRiemann}
-\citation{PyRiemann}
-\@writefile{toc}{\contentsline {section}{\numberline {2}Обзор существующих алгоритмов классификации}{7}{section.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {1}Введение}{4}{section.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}Обозначения}{5}{section.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Постановка задачи классификации сигнала ЭКоГ}{5}{section.3}\protected@file@percent }
+\citation{xie2018decoding}
+\citation{wang2018ajile}
+\citation{du2018decoding}
+\citation{volkova2019decoding}
+\citation{volkova2019decoding}
 \citation{kalman1961}
 \citation{harrison1976bayesian,harvey1984estimating,harvey1983forecasting}
 \citation{durbin2002simple}
 \citation{douc2014nonlinear}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Обзор существующих подходов к декодированию сигналов}{6}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Модели пространства состояний}{6}{section.5}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Подходы к работе с данными ЭКоГ. \textbf  {(A)} Классический подход. \textbf  {(B)} Подход глубокого обучения. \textbf  {(C)} Ансамбль моделей. Взято из \citep  {volkova2019decoding}\relax }}{7}{figure.caption.2}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:ecog-approaches}{{1}{7}{Подходы к работе с данными ЭКоГ. \textbf {(A)} Классический подход. \textbf {(B)} Подход глубокого обучения. \textbf {(C)} Ансамбль моделей. Взято из \citep {volkova2019decoding}\relax }{figure.caption.2}{}}
 \citation{temp_he2016deep}
-\@writefile{toc}{\contentsline {section}{\numberline {3}Модели пространства состояний}{8}{section.3}\protected@file@percent }
-\newlabel{eq:ssm-cont}{{1}{8}{Модели пространства состояний}{equation.3.1}{}}
-\newlabel{eq:ssm-discr}{{2}{8}{Модели пространства состояний}{equation.3.2}{}}
 \citation{rnn}
 \citation{lstm,lstm-and-gru}
 \citation{bidirectional-rnn}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Рекуррентные нейронные сети (RNN)}{9}{subsection.3.1}\protected@file@percent }
-\newlabel{eq:rnn}{{3}{9}{Рекуррентные нейронные сети (RNN)}{equation.3.3}{}}
+\newlabel{eq:ssm-cont}{{1}{8}{Модели пространства состояний}{equation.5.1}{}}
+\newlabel{eq:ssm-discr}{{2}{8}{Модели пространства состояний}{equation.5.2}{}}
+\citation{glaser2020machine}
+\citation{glaser2020machine}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Рекуррентные нейронные сети (RNN)}{9}{subsection.5.1}\protected@file@percent }
+\newlabel{eq:rnn}{{3}{9}{Рекуррентные нейронные сети (RNN)}{equation.5.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Схема обучения и предсказания рекуррентного декодера. Взято из \citep  {glaser2020machine}\relax }}{9}{figure.caption.3}\protected@file@percent }
+\newlabel{fig:rnn-schema}{{2}{9}{Схема обучения и предсказания рекуррентного декодера. Взято из \citep {glaser2020machine}\relax }{figure.caption.3}{}}
 \citation{node}
 \citation{latent-ode}
 \citation{ncde-online}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Нейронные контролируемые дифференциальные уравнения (NCDE)}{10}{subsection.3.2}\protected@file@percent }
-\newlabel{eq:node}{{4}{10}{Нейронные контролируемые дифференциальные уравнения (NCDE)}{equation.3.4}{}}
-\newlabel{eq:ncde}{{5}{10}{Нейронные контролируемые дифференциальные уравнения (NCDE)}{equation.3.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Нейронные контролируемые дифференциальные уравнения (NCDE)}{10}{subsection.5.2}\protected@file@percent }
+\newlabel{eq:node}{{4}{10}{Нейронные контролируемые дифференциальные уравнения (NCDE)}{equation.5.4}{}}
+\newlabel{eq:ncde}{{5}{10}{Нейронные контролируемые дифференциальные уравнения (NCDE)}{equation.5.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Иллюстрация алгоритма Neural CDE\relax }}{11}{figure.caption.4}\protected@file@percent }
+\newlabel{fig:ncde}{{3}{11}{Иллюстрация алгоритма Neural CDE\relax }{figure.caption.4}{}}
 \citation{ncde}
 \citation{ncde}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Модель структурированного пространства состояний (S4)}{11}{subsection.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Модель структурированного пространства состояний (S4)}{12}{subsection.5.3}\protected@file@percent }
 \citation{s4}
 \citation{s4-git}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Сравнение моделей}{12}{subsection.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Сравнение моделей}{13}{subsection.5.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Сравнение моделей по числу обучаемых параметров, времени прямого прохода, наличию эффективной реализации, возможности работы с пропусками и хранения всей истории\relax }}{13}{table.caption.5}\protected@file@percent }
+\newlabel{tbl:dl-analysis}{{1}{13}{Сравнение моделей по числу обучаемых параметров, времени прямого прохода, наличию эффективной реализации, возможности работы с пропусками и хранения всей истории\relax }{table.caption.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Вычислительный эксперимент}{13}{section.6}\protected@file@percent }
 \citation{peterson2021behavioral}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Вычислительный эксперимент}{13}{section.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Экспериментальные данные}{13}{subsection.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Результаты}{13}{subsection.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {}Заключение}{14}{section*.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Экспериментальные данные}{14}{subsection.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Условия проведения эксперимента}{14}{subsection.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Анализ ошибки}{14}{subsection.6.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Архитектура модели классификации\relax }}{15}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:seq-model}{{4}{15}{Архитектура модели классификации\relax }{figure.caption.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Точность предсказания моделей пространства состояний\relax }}{15}{figure.caption.7}\protected@file@percent }
+\newlabel{fig:accuracy-analysis}{{5}{15}{Точность предсказания моделей пространства состояний\relax }{figure.caption.7}{}}
 \bibstyle{unsrtnat}
 \bibdata{references.bib}
 \bibcite{temp_ethier2012restoration}{{1}{2012}{{Ethier et~al.}}{{Ethier, Oby, Bauman, and Miller}}}
 \bibcite{temp_ibos2017sequential}{{2}{2017}{{Ibos and Freedman}}{{}}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Сравнение характеристик RNN, S4 и NCDE\relax }}{16}{table.caption.8}\protected@file@percent }
+\newlabel{tbl:rnn-s4-ncde}{{2}{16}{Сравнение характеристик RNN, S4 и NCDE\relax }{table.caption.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}Итоговые рекомендации}{16}{subsection.6.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}Заключение}{16}{section.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {}Список литературы}{16}{section.7}\protected@file@percent }
 \bibcite{temp_davidson2009hippocampal}{{3}{2009}{{Davidson et~al.}}{{Davidson, Kloosterman, and Wilson}}}
-\bibcite{temp_leite2018deep}{{4}{2018}{{Leite et~al.}}{{Leite, Pereira, Gurjao, and Veloso}}}
-\bibcite{temp_caldas2020towards}{{5}{2020}{{Caldas et~al.}}{{Caldas, Pereira, Leite, Oliveira, and Lucena}}}
-\bibcite{paninski2010new}{{6}{2010}{{Paninski et~al.}}{{Paninski, Ahmadian, Ferreira, Koyama, Rahnama~Rad, Vidne, Vogelstein, and Wu}}}
+\bibcite{firuzi2022decoding}{{4}{2022}{{Firuzi et~al.}}{{Firuzi, Ahmadyani, Abdi, Naderi, Hassan, and Bokani}}}
+\bibcite{temp_leite2018deep}{{5}{2018}{{Leite et~al.}}{{Leite, Pereira, Gurjao, and Veloso}}}
+\bibcite{temp_caldas2020towards}{{6}{2020}{{Caldas et~al.}}{{Caldas, Pereira, Leite, Oliveira, and Lucena}}}
 \bibcite{temp_an2022auto}{{7}{2022}{{An et~al.}}{{An, Lam, and Ling}}}
-\bibcite{wu2009neural}{{8}{2009}{{Wu et~al.}}{{Wu, Kulkarni, Hatsopoulos, and Paninski}}}
-\bibcite{ncde}{{9}{2020}{{Kidger et~al.}}{{Kidger, Morrill, Foster, and Lyons}}}
-\bibcite{s4}{{10}{2021}{{Gu et~al.}}{{Gu, Goel, and R{\'e}}}}
-\bibcite{kalman1961}{{11}{1961}{{Kalman and Bucy}}{{}}}
-\bibcite{harrison1976bayesian}{{12}{1976}{{Harrison and Stevens}}{{}}}
-\bibcite{harvey1984estimating}{{13}{1984}{{Harvey and Pierse}}{{}}}
-\bibcite{harvey1983forecasting}{{14}{1983}{{Harvey and Todd}}{{}}}
-\@writefile{toc}{\contentsline {section}{\numberline {}Список литературы}{15}{section*.5}\protected@file@percent }
-\bibcite{durbin2002simple}{{15}{2002}{{Durbin and Koopman}}{{}}}
-\bibcite{douc2014nonlinear}{{16}{2014}{{Douc et~al.}}{{Douc, Moulines, and Stoffer}}}
-\bibcite{temp_he2016deep}{{17}{2016}{{He et~al.}}{{He, Zhang, Ren, and Sun}}}
-\bibcite{rnn}{{18}{1985}{{Rumelhart et~al.}}{{Rumelhart, Hinton, and Williams}}}
-\bibcite{lstm}{{19}{2016}{{Greff et~al.}}{{Greff, Srivastava, Koutn{\'\i }k, Steunebrink, and Schmidhuber}}}
-\bibcite{lstm-and-gru}{{20}{2014}{{Chung et~al.}}{{Chung, Gulcehre, Cho, and Bengio}}}
-\bibcite{bidirectional-rnn}{{21}{2005}{{Graves et~al.}}{{Graves, Fern{\'a}ndez, and Schmidhuber}}}
-\bibcite{node}{{22}{2018}{{Chen et~al.}}{{Chen, Rubanova, Bettencourt, and Duvenaud}}}
-\bibcite{latent-ode}{{23}{2019}{{Rubanova et~al.}}{{Rubanova, Chen, and Duvenaud}}}
-\bibcite{ncde-online}{{24}{2021}{{Morrill et~al.}}{{Morrill, Kidger, Yang, and Lyons}}}
-\bibcite{s4-git}{{25}{2021}{{HazyResearch}}{{}}}
-\bibcite{peterson2021behavioral}{{26}{2021}{{Peterson et~al.}}{{Peterson, Singh, Wang, Rao, and Brunton}}}
-\gdef \@abspage@last{16}
+\bibcite{eegnet}{{8}{2018}{{Lawhern et~al.}}{{Lawhern, Solon, Waytowich, Gordon, Hung, and Lance}}}
+\bibcite{htnet}{{9}{2021{}}{{Peterson et~al.}}{{Peterson, Steine-Hanson, Davis, Rao, and Brunton}}}
+\bibcite{defossez2022decoding}{{10}{2022}{{D{\'e}fossez et~al.}}{{D{\'e}fossez, Caucheteux, Rapin, Kabeli, and King}}}
+\bibcite{tang2023semantic}{{11}{2023}{{Tang et~al.}}{{Tang, LeBel, Jain, and Huth}}}
+\bibcite{kalman1961}{{12}{1961}{{Kalman and Bucy}}{{}}}
+\bibcite{paninski2010new}{{13}{2010}{{Paninski et~al.}}{{Paninski, Ahmadian, Ferreira, Koyama, Rahnama~Rad, Vidne, Vogelstein, and Wu}}}
+\bibcite{wu2009neural}{{14}{2009}{{Wu et~al.}}{{Wu, Kulkarni, Hatsopoulos, and Paninski}}}
+\bibcite{rnn}{{15}{1985}{{Rumelhart et~al.}}{{Rumelhart, Hinton, and Williams}}}
+\bibcite{ncde}{{16}{2020}{{Kidger et~al.}}{{Kidger, Morrill, Foster, and Lyons}}}
+\bibcite{s4}{{17}{2021}{{Gu et~al.}}{{Gu, Goel, and R{\'e}}}}
+\bibcite{xie2018decoding}{{18}{2018}{{Xie et~al.}}{{Xie, Schwartz, and Prasad}}}
+\bibcite{wang2018ajile}{{19}{2018}{{Wang et~al.}}{{Wang, Farhadi, Rao, and Brunton}}}
+\bibcite{du2018decoding}{{20}{2018}{{Du et~al.}}{{Du, Yang, Liu, and Huang}}}
+\bibcite{volkova2019decoding}{{21}{2019}{{Volkova et~al.}}{{Volkova, Lebedev, Kaplan, and Ossadtchi}}}
+\bibcite{harrison1976bayesian}{{22}{1976}{{Harrison and Stevens}}{{}}}
+\bibcite{harvey1984estimating}{{23}{1984}{{Harvey and Pierse}}{{}}}
+\bibcite{harvey1983forecasting}{{24}{1983}{{Harvey and Todd}}{{}}}
+\bibcite{durbin2002simple}{{25}{2002}{{Durbin and Koopman}}{{}}}
+\bibcite{douc2014nonlinear}{{26}{2014}{{Douc et~al.}}{{Douc, Moulines, and Stoffer}}}
+\bibcite{temp_he2016deep}{{27}{2016}{{He et~al.}}{{He, Zhang, Ren, and Sun}}}
+\bibcite{lstm}{{28}{2016}{{Greff et~al.}}{{Greff, Srivastava, Koutn{\'\i }k, Steunebrink, and Schmidhuber}}}
+\bibcite{lstm-and-gru}{{29}{2014}{{Chung et~al.}}{{Chung, Gulcehre, Cho, and Bengio}}}
+\bibcite{bidirectional-rnn}{{30}{2005}{{Graves et~al.}}{{Graves, Fern{\'a}ndez, and Schmidhuber}}}
+\bibcite{glaser2020machine}{{31}{2020}{{Glaser et~al.}}{{Glaser, Benjamin, Chowdhury, Perich, Miller, and Kording}}}
+\bibcite{node}{{32}{2018}{{Chen et~al.}}{{Chen, Rubanova, Bettencourt, and Duvenaud}}}
+\bibcite{latent-ode}{{33}{2019}{{Rubanova et~al.}}{{Rubanova, Chen, and Duvenaud}}}
+\bibcite{ncde-online}{{34}{2021}{{Morrill et~al.}}{{Morrill, Kidger, Yang, and Lyons}}}
+\bibcite{s4-git}{{35}{2021}{{HazyResearch}}{{}}}
+\bibcite{peterson2021behavioral}{{36}{2021{}}{{Peterson et~al.}}{{Peterson, Singh, Wang, Rao, and Brunton}}}
+\gdef \@abspage@last{19}
