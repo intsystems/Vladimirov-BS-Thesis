@@ -17,14 +17,14 @@ ecog_lp = rootpath + 'ecog_data/' # data load path
 ecog_roi_proj_lp = rootpath + 'proj-matrices-ecog/'
 
 ### Same modality decoder params (across participants) ###
-n_folds_same = 10#36 # number of total folds
+n_folds_same = 2#36 # number of total folds
 spec_meas_same = ['power']
 hyps_same = {'F1' : 19, 'dropoutRate' : 0.5, 'kernLength' : 24,
              'kernLength_sep' : 88, 'dropoutType' : 'Dropout',
              'D' : 2, 'n_estimators' : 240, 'max_depth' : 6}
 hyps_same['F2'] = hyps_same['F1'] * hyps_same['D'] # F2 = F1 * D
 epochs_same = 100
-patience_same = 10
+patience_same = 15
 
 ### Fine-tune same modality decoders ###
 model_type_finetune = 'eegnet_hilb' # NN model type to fine-tune (must be either 'eegnet_hilb' or 'eegnet')
@@ -49,7 +49,7 @@ n_train_trials = [16,34,66,100]
 n_val_trials = [8,16,34,50]
 
 ### Train same modality decoders with different numbers of training participants ###
-max_train_parts = 10 # use 1--max_train_subs training participants
+max_train_parts = 10 #'rnn' use 1--max_train_subs training participants
 n_val_parts = 1 # number of validation participants to use
 ##################USER-DEFINED PARAMETERS##################
 
@@ -61,7 +61,7 @@ for s,val in enumerate(spec_meas_same):
     if not os.path.exists(multi_sp):
         os.makedirs(multi_sp)
     combined_sbjs = True
-    models = ['ncde'] # 's4', 'ncde' avoid fitting non-HTNet models again
+    models = ['rnn']#, 's4', 'ncde'] # 'rnn', 's4', 'ncde' avoid fitting non-HTNet models again
     accuracy = run_nn_models(multi_sp, n_folds_same, combined_sbjs, ecog_lp, ecog_roi_proj_lp, test_day = 'last', do_log=do_log,
                   epochs=epochs_same, patience=patience_same, models=models, compute_val=compute_val,
                   F1 = hyps_same['F1'], dropoutRate = hyps_same['dropoutRate'], kernLength = hyps_same['kernLength'],

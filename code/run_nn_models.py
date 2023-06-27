@@ -26,7 +26,8 @@ if os.environ.get("CUDA_VISIBLE_DEVICES") is None:
 DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 BATCH_SIZE = 64
 MAX_GRAD_NORM = 5
-L2_LAMBDA = 0
+LABEL_SMOOTHING_COEF = 0.01
+SIGNALS_NORM_COEF = 400
 
 
 def unroll_batch(batch, projectROIs):
@@ -271,6 +272,9 @@ def run_nn_models(sp, n_folds, combined_sbjs, lp, roi_proj_loadpath,
                                                                                n_chans_all=n_chans_all,
                                                                                test_day=test_day, tlim=tlim)
     X[np.isnan(X)] = 0  # set all NaN's to 0
+    X /= SIGNALS_NORM_COEF
+    X_test_orig /= SIGNALS_NORM_COEF
+
     y = y.astype(int)
     y_test_orig = y_test_orig.astype(int)
     # Identify the number of unique labels (or classes) present
