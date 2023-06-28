@@ -102,7 +102,6 @@ class FastRNNLayer(nn.Module):
             self.dense = nn.Linear(hidden_size, proj_size)
         else:
             self.dense = nn.Identity()
-            #self.dense = nn.utils.weight_norm(self.dense, name='weight')
 
         self.dropout = 1-dropout
         self.layer_names = np.ravel([[f'weight_hh_l{i}', f'weight_ih_l{i}'] for i in range(num_layers)])
@@ -145,6 +144,7 @@ class NeuralCDEFunc(nn.Module):
         super().__init__()
         self.hid_size = hid_size
         self.in_channels = in_channels
+        #self.linear = nn.Linear(hid_size, hid_size * in_channels)
         self.linear = nn.Sequential(
             nn.Linear(hid_size, 4, bias=False),
             nn.Linear(4, hid_size * in_channels, bias=False)
@@ -165,7 +165,7 @@ class NeuralCDE(nn.Module):
         self.in_channels = in_channels + 1
 
         self.func = NeuralCDEFunc(hidden_size, self.in_channels)
-        self.dropout = nn.Dropout(p=dropoutRate/5)
+        self.dropout = nn.Dropout(dropoutRate)
 
         if out_channels > 0:
             self.dense = nn.Linear(hidden_size, out_channels)
@@ -186,10 +186,9 @@ class NeuralCDE(nn.Module):
         coeffs = torchcde.linear_interpolation_coeffs(inp, t)
         X = torchcde.LinearInterpolation(coeffs, t)
         z0 = torch.rand(batch_size, self.hidden_size, device=inp.device)
-        adjoint_params = tuple(self.func.parameters()) + (coeffs,)
 
         outp = torchcde.cdeint(X=X, func=self.func, z0=z0, t=X._t, method='rk4', adjoint=False)
-        return self.dropout(self.dense(outp)), None
+        return self.dense(self.dropout(outp)), None
 
 
 class AdaptiveConcatPoolRNN(nn.Module):
@@ -203,17 +202,23 @@ class AdaptiveConcatPoolRNN(nn.Module):
 
 
 class SeqRNN(nn.Module):
-    def __init__(self, nb_classes, k_signals=0, dropoutRate=0.5, hid_size=64):
+    def __init__(self, nb_classes, k_signals=0, dropoutRate=0.5, hid_size=64, use_conv=False, kernLength=64):
         super().__init__()
+        if use_conv:
+            self.feature_extractor = nn.Conv2d(1, 1, (1, kernLength), padding=(0, kernLength // 2), bias=False)
+        else:
+            self.feature_extractor = nn.Identity()
+
         self.seq_model = FastRNNLayer(k_signals, hid_size, num_layers=1, dropout=dropoutRate)
         self.pooling = AdaptiveConcatPoolRNN()
-        self.activ = nn.ELU()
+        self.activ = nn.ReLU()
         self.dense = nn.Linear(3*hid_size, nb_classes)
 
     def forward(self, inp, roi):
         # inp.shape = (batch_size, 1, in_dim, seq_len)
+        inp = self.feature_extractor(inp)
         batch_size, _, in_channels, seq_len = inp.shape
-        inp = apply_hilbert_tf(inp, do_log=False, compute_val='power', data_srate=500)
+        # inp = apply_hilbert_tf(inp, do_log=False, compute_val='power', data_srate=500)
         # inp.shape = (batch_size, seq_len, 1, in_dim)
         inp = torch.transpose(torch.transpose(inp, 2, 3), 1, 2)
         inp = inp.reshape(batch_size, seq_len, -1)
@@ -224,21 +229,34 @@ class SeqRNN(nn.Module):
         return self.dense(self.activ(outp))
 
 
+class SeqCNN(SeqRNN):
+    def __init__(self, nb_classes, k_signals=0, dropoutRate=0.5, hid_size=64, use_conv=False, kernLength=64):
+        super().__init__(nb_classes, k_signals, dropoutRate, hid_size, use_conv=True, kernLength=kernLength)
+        self.feature_extractor = nn.Dropout(dropoutRate)
+        self.seq_model = nn.Conv2d(1, 1, (1, kernLength), padding=(0, kernLength // 2), bias=False)
+
+
+class SeqTransformer(SeqRNN):
+    def __init__(self, nb_classes, k_signals=0, dropoutRate=0.5, hid_size=64, use_conv=False, kernLength=64):
+        super().__init__(nb_classes, k_signals, dropoutRate, hid_size, use_conv=False)
+        self.seq_model = nn.MultiheadAttention(embed_dim=hid_size, num_heads=1, dropout=dropoutRate, batch_first=True)
+
+
 class SeqS4(SeqRNN):
-    def __init__(self, nb_classes, k_signals=0, dropoutRate=0.5, hid_size=64):
-        super().__init__(nb_classes, k_signals, dropoutRate, hid_size)
+    def __init__(self, nb_classes, k_signals=0, dropoutRate=0.5, hid_size=64, use_conv=False, kernLength=64):
+        super().__init__(nb_classes, k_signals, dropoutRate, hid_size, use_conv, kernLength)
         self.seq_model = S4Block(
             d_model=k_signals,
             final_act=None,
             transposed=False,
             weight_norm=True,
-            tie_dropout=True,
+            tie_dropout=False,
             dropout=dropoutRate
         )
         self.dense = nn.Linear(3 * k_signals, nb_classes)
 
 
 class SeqNCDE(SeqRNN):
-    def __init__(self, nb_classes, k_signals=0, dropoutRate=0.5, hid_size=64, seq_len=1):
-        super().__init__(nb_classes, k_signals, dropoutRate, hid_size)
+    def __init__(self, nb_classes, k_signals=0, dropoutRate=0.5, hid_size=64, seq_len=1, use_conv=False, kernLength=64):
+        super().__init__(nb_classes, k_signals, dropoutRate, hid_size, use_conv, kernLength)
         self.seq_model = NeuralCDE(hid_size, seq_len, k_signals, -1, dropoutRate=dropoutRate)

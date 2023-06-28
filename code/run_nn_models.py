@@ -14,7 +14,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 
 
-from htnet import *
+from models import *
 from utils import load_data, folds_choose_subjects, subject_data_inds, roi_proj_rf, \
     get_custom_motor_rois, proj_mats_good_rois, to_categorical
 
@@ -26,7 +26,6 @@ if os.environ.get("CUDA_VISIBLE_DEVICES") is None:
 DEVICE = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 BATCH_SIZE = 64
 MAX_GRAD_NORM = 5
-LABEL_SMOOTHING_COEF = 0.01
 SIGNALS_NORM_COEF = 400
 
 
@@ -68,11 +67,19 @@ def cnn_model(X_train, Y_train, X_validate, Y_validate, X_test, Y_test, chckpt_p
                       compute_val=compute_val, data_srate=ecog_srate).to(DEVICE)
     elif modeltype == 'rnn':
         model = SeqRNN(nb_classes, dropoutRate=dropoutRate, k_signals=X_train.shape[2]).to(DEVICE)
+    elif modeltype == 'cnn-rnn':
+        model = SeqRNN(nb_classes, dropoutRate=dropoutRate, k_signals=X_train.shape[2], use_conv=True, kernLength=kernLength).to(DEVICE)
     elif modeltype == 's4':
         model = SeqS4(nb_classes, dropoutRate=dropoutRate, k_signals=X_train.shape[2]).to(DEVICE)
+    elif modeltype == 'cnn-s4':
+        model = SeqS4(nb_classes, dropoutRate=dropoutRate, k_signals=X_train.shape[2], use_conv=True, kernLength=kernLength).to(DEVICE)
     elif modeltype == 'ncde':
         model = SeqNCDE(nb_classes, dropoutRate=dropoutRate, k_signals=X_train.shape[2],
                         seq_len=X_train.shape[-1]).to(DEVICE)
+    elif modeltype == 'cnn':
+        model = SeqCNN(nb_classes, dropoutRate=dropoutRate, k_signals=X_train.shape[2], use_conv=True, kernLength=kernLength).to(DEVICE)
+    elif modeltype == 'attn':
+        model = SeqTransformer(nb_classes, dropoutRate=dropoutRate, k_signals=X_train.shape[2]).to(DEVICE)
     else:
         raise ValueError('Wrong modeltype!')
 
@@ -97,7 +104,7 @@ def cnn_model(X_train, Y_train, X_validate, Y_validate, X_test, Y_test, chckpt_p
     if proj_mat_out is not None:
         proj_mat_out = torch.tensor(proj_mat_out, dtype=torch.float32)
 
-    # Create PyTorch datasets
+    # Create PyTorch datasets)
     if projectROIs:
         train_dataset = TensorDataset(X_train_tensor, proj_mat_out[sbj_order_train], Y_train_tensor)
         validate_dataset = TensorDataset(X_validate_tensor, proj_mat_out[sbj_order_validate, ...], Y_validate_tensor)
@@ -119,7 +126,9 @@ def cnn_model(X_train, Y_train, X_validate, Y_validate, X_test, Y_test, chckpt_p
     last_epoch = epochs - 1
     t_start_fit = time.time()
 
+    epoch_durations = []
     for epoch in range(epochs):
+        epoch_start = time.time()
         model.train()
         train_loss, train_acc = 0.0, 0.0
         for i, batch in enumerate(train_loader):
@@ -154,6 +163,8 @@ def cnn_model(X_train, Y_train, X_validate, Y_validate, X_test, Y_test, chckpt_p
         val_acc /= len(validate_loader)
         print(f"Epoch {epoch + 1}/{epochs}, Train Loss: {train_loss}, Validation Loss: {val_loss}, Train Acc: {train_acc}, Validation Acc: {val_acc}")
 
+        epoch_end = time.time()
+        epoch_durations.append(epoch_end - epoch_start)
         # Save the best model
         if val_loss < best_val_loss:
             best_epoch = epoch
@@ -168,7 +179,8 @@ def cnn_model(X_train, Y_train, X_validate, Y_validate, X_test, Y_test, chckpt_p
             break
 
     t_fit_total = time.time() - t_start_fit
-
+    epoch_durations = np.array(epoch_durations)
+    print('Epoch time:', epoch_durations.mean(), '+-', epoch_durations.std())
     # Load model weights from best model and compute train/val/test accuracies
     model.load_state_dict(torch.load(chckpt_path))
     model.eval()
@@ -242,6 +254,8 @@ def run_nn_models(sp, n_folds, combined_sbjs, lp, roi_proj_loadpath,
 
     # Set random seed
     np.random.seed(rand_seed)
+    torch.manual_seed(rand_seed)
+    torch.cuda.manual_seed(rand_seed)
 
     # Perform different procedures depending on whether or not multiple subjects are being fit together
     # For multi-subject fits, obtain projection matrix and good regions of interest for each subject
@@ -250,7 +264,7 @@ def run_nn_models(sp, n_folds, combined_sbjs, lp, roi_proj_loadpath,
     else:
         custom_roi_inds = None
     print("Determining ROIs")
-    proj_mat_out, good_ROIs, chan_ind_vals_all = proj_mats_good_rois(pats_ids_in,
+    proj_mat_out, good_ROIs, _ = proj_mats_good_rois(pats_ids_in,
                                                                      n_chans_all=n_chans_all,
                                                                      rem_bad_chans=rem_bad_chans,
                                                                      dipole_dens_thresh=dipole_dens_thresh,
@@ -347,6 +361,11 @@ def run_nn_models(sp, n_folds, combined_sbjs, lp, roi_proj_loadpath,
                 Y_test = y_test_orig[test_inds]
                 sbj_order_test = sbj_order_test_load[test_inds]
 
+            if modeltype != 'rf':
+                X_train = roi_proj_rf(X_train, sbj_order_train, nROIs, proj_mat_out, reshape=False)
+                X_validate = roi_proj_rf(X_validate, sbj_order_validate, nROIs, proj_mat_out, reshape=False)
+                X_test = roi_proj_rf(X_test, sbj_order_test, nROIs, proj_mat_out, reshape=False)
+
             if modeltype == 'rf':
                 # For random forest, project data from electrodes to ROIs in advance
                 X_train_proj = roi_proj_rf(X_train, sbj_order_train, nROIs, proj_mat_out)
@@ -376,13 +395,10 @@ def run_nn_models(sp, n_folds, combined_sbjs, lp, roi_proj_loadpath,
                 continue
 
             # Reformat data size for NN fitting
-            # Y_train = to_categorical(Y_train - 1)
             Y_train -= 1
             X_train = np.expand_dims(X_train, 1)
-            # Y_validate = to_categorical(Y_validate - 1)
             Y_validate -= 1
             X_validate = np.expand_dims(X_validate, 1)
-            # Y_test = to_categorical(Y_test - 1)
             Y_test -= 1
             X_test = np.expand_dims(X_test, 1)
             proj_mat_out2 = np.expand_dims(proj_mat_out, 1)

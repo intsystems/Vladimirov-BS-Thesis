@@ -189,6 +189,8 @@ def proj_to_roi(in_vals: list):
         The projection matrix from channels to ROIs
     '''
     x, proj_mat = in_vals[:2]
+    print('X.shape =', x.shape)
+    print('proj_mat.shape =', proj_mat.shape)
     shape_x = list(x.size())
 
     # Apply projection matrix separately for each filter in x (slow...)
@@ -197,6 +199,7 @@ def proj_to_roi(in_vals: list):
         output_list.append(proj_mat[:, 0, ...] @ x[:, i, ...])
 
     x_out = torch.stack(output_list, dim=1)
+    print(x_out.shape)
     return x_out
 
 
@@ -459,7 +462,7 @@ def subject_data_inds(sbj, sbj_order, labels_unique, frodo, save_string, half_n_
     return np.asarray(inds)
 
 
-def roi_proj_rf(X_in, sbj_order, nROIs, proj_mat_out):
+def roi_proj_rf(X_in, sbj_order, nROIs, proj_mat_out, reshape=True):
     '''
     Project spectral power from electrodes to ROI's prior for random forest classification
     '''
@@ -470,7 +473,9 @@ def roi_proj_rf(X_in, sbj_order, nROIs, proj_mat_out):
     for s in range(X_in.shape[0]):
         X_in_proj[s, ...] = proj_mat_out[sbj_order[s], ...] @ X_in[s, ...]
     del X_in
-    X_in_proj = X_in_proj.reshape(X_in_proj.shape[0], -1)
+
+    if reshape:
+        X_in_proj = X_in_proj.reshape(X_in_proj.shape[0], -1)
 
     return X_in_proj
 
